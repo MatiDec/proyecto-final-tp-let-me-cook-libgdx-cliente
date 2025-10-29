@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="29" tilewidth="128" tileheight="128" infinite="0" nextlayerid="9" nextobjectid="131">
+ <tileset firstgid="1" source="ConjuntoPiso.tsx"/>
+ <tileset firstgid="3" source="ConjuntoColisionableMostrador.tsx"/>
+ <tileset firstgid="7" source="ConjuntoColisionableMesa.tsx"/>
+ <tileset firstgid="22" source="ConjuntoInteractuable.tsx"/>
+ <tileset firstgid="29" source="Nivel_1.tsx"/>
+ <objectgroup id="2" name="Interactuables">
+  <object id="5" name="Tostadora" type="Interactuable" x="1920" y="1280" width="128" height="128"/>
+  <object id="6" name="Tostadora" type="Interactuable" x="2048" y="1280" width="128" height="128"/>
+  <object id="14" name="Cafetera" type="Interactuable" x="1792" y="1280" width="128" height="128"/>
+  <object id="16" name="Cafetera" type="Interactuable" x="2176" y="1280" width="128" height="128"/>
+  <object id="23" name="Heladera" type="Interactuable" x="1920" y="1536" width="128" height="128"/>
+  <object id="24" name="Heladera" type="Interactuable" x="2048" y="1536" width="128" height="128"/>
+  <object id="25" name="Horno" type="Interactuable" x="1024" y="1792" width="128" height="128"/>
+  <object id="27" name="Horno" type="Interactuable" x="1024" y="1920" width="128" height="128"/>
+  <object id="29" name="MaquinaEnvasadora" type="Interactuable" x="1024" y="2176" width="128" height="128"/>
+  <object id="30" name="MaquinaEnvasadora" type="Interactuable" x="1024" y="2304" width="128" height="128"/>
+  <object id="31" name="AreaEnsamblaje" type="Interactuable" x="1920" y="2560" width="128" height="128"/>
+  <object id="32" name="AreaEnsamblaje" type="Interactuable" x="2048" y="2560" width="128" height="128"/>
+  <object id="33" name="Freidora" type="Interactuable" x="2944" y="2176" width="128" height="128"/>
+  <object id="34" name="Freidora" type="Interactuable" x="2944" y="2304" width="128" height="128"/>
+  <object id="35" name="Horno" type="Interactuable" x="2944" y="1792" width="128" height="128"/>
+  <object id="36" name="Horno" type="Interactuable" x="2944" y="1920" width="128" height="128"/>
+  <object id="92" name="MesaRetiro" type="Interactuable" x="2176" y="896" width="128" height="128"/>
+  <object id="93" name="MesaRetiro" type="Interactuable" x="2304" y="896" width="128" height="128"/>
+  <object id="94" name="MesaRetiro" type="Interactuable" x="2432" y="896" width="128" height="128"/>
+  <object id="95" name="MesaRetiro" type="Interactuable" x="2560" y="896" width="128" height="128"/>
+  <object id="101" name="CajaRegistradora" type="Interactuable" x="1152" y="896" width="128" height="128"/>
+  <object id="110" name="CajaRegistradora" type="Interactuable" x="1408" y="896" width="128" height="128"/>
+  <object id="111" name="CajaRegistradora" type="Interactuable" x="1664" y="896" width="128" height="128"/>
+  <object id="112" name="CajaVirtual" type="Interactuable" x="1920" y="896" width="128" height="128"/>
+  <object id="119" name="Fuente" type="Interactuable" x="2944" y="1408" width="128" height="128"/>
+  <object id="121" name="Fuente" type="Interactuable" x="2944" y="1536" width="128" height="128"/>
+  <object id="122" name="Basurero" type="Interactuable" x="1024" y="1152" width="128" height="128"/>
+  <object id="123" name="Basurero" type="Interactuable" x="2944" y="1152" width="128" height="128"/>
+ </objectgroup>
+ <objectgroup id="8" name="Jugadores">
+  <object id="116" name="Jugador_1" type="Jugador" x="1920" y="1792" width="128" height="128"/>
+  <object id="117" name="Jugador_2" type="Jugador" x="2048" y="1792" width="128" height="128"/>
+ </objectgroup>
+ <objectgroup id="5" name="Colisionables">
+  <object id="47" type="Colisionable" x="1024" y="1280" width="128" height="512"/>
+  <object id="48" type="Colisionable" x="1024" y="2048" width="128" height="128"/>
+  <object id="49" type="Colisionable" x="1024" y="2432" width="128" height="128"/>
+  <object id="50" type="Colisionable" x="1024" y="2560" width="896" height="128"/>
+  <object id="51" type="Colisionable" x="2176" y="2560" width="896" height="128"/>
+  <object id="52" type="Colisionable" x="2944" y="2432" width="128" height="128"/>
+  <object id="53" type="Colisionable" x="2944" y="2048" width="128" height="128"/>
+  <object id="54" type="Colisionable" x="2944" y="1280" width="128" height="512"/>
+  <object id="55" type="Colisionable" x="1408" y="1280" width="384" height="1024"/>
+  <object id="56" type="Colisionable" x="1792" y="1408" width="128" height="896"/>
+  <object id="57" type="Colisionable" x="2176" y="1408" width="128" height="896"/>
+  <object id="58" type="Colisionable" x="1920" y="1408" width="256" height="128"/>
+  <object id="59" type="Colisionable" x="2304" y="1280" width="384" height="1024"/>
+  <object id="80" type="Colisionable" x="896" y="896" width="128" height="1920"/>
+  <object id="84" type="Colisionable" x="3072" y="896" width="128" height="1920"/>
+  <object id="86" type="Colisionable" x="1024" y="2688" width="2048" height="128"/>
+  <object id="124" type="Colisionable" x="1024" y="896" width="2048" height="128"/>
+  <object id="126" type="Colisionable" x="1024" y="1152" width="128" height="1408"/>
+  <object id="127" type="Colisionable" x="1152" y="2560" width="1792" height="128"/>
+  <object id="128" type="Colisionable" x="2944" y="1152" width="128" height="1408"/>
+  <object id="129" type="Colisionable" x="1408" y="1280" width="1280" height="128"/>
+  <object id="130" type="Colisionable" x="1792" y="1536" width="512" height="128"/>
+ </objectgroup>
+ <layer id="1" name="Capa de patrones 1" class="Colisionable" width="32" height="29">
+  <data encoding="csv">
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,53,37,53,37,53,37,53,56,53,38,38,38,38,53,53,53,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,54,54,54,54,54,54,54,54,54,54,54,54,54,54,54,54,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,57,54,54,54,54,54,54,54,54,54,54,54,54,54,54,57,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,51,54,54,52,50,50,29,36,36,29,50,50,51,54,54,52,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,45,54,54,49,40,40,40,40,40,40,40,40,45,54,54,2684354618,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,45,54,54,49,40,40,44,33,33,43,40,40,45,54,54,2684354618,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,45,54,54,49,40,40,45,54,54,49,40,40,45,54,54,49,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,34,54,54,49,40,40,45,54,54,49,40,40,45,54,54,35,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,34,54,54,49,40,40,45,54,54,49,40,40,45,54,54,35,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,45,54,54,49,40,40,45,54,54,49,40,40,45,54,54,49,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,31,54,54,48,46,46,47,54,54,48,46,46,47,54,54,30,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,31,54,54,54,54,54,54,54,54,54,54,54,54,54,54,30,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,45,54,54,54,54,54,54,54,54,54,54,54,54,54,54,49,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,42,50,50,50,50,50,50,32,32,50,50,50,50,50,50,41,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,
+55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55
+</data>
+ </layer>
+</map>

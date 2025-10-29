@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="24" height="28" tilewidth="128" tileheight="128" infinite="0" nextlayerid="6" nextobjectid="54">
+ <tileset firstgid="1" source="Nivel_1.tsx"/>
+ <layer id="1" name="Capa de patrones 1" class="Colisionable" width="24" height="28">
+  <data encoding="csv">
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,9,9,28,10,10,25,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,26,26,26,26,26,26,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,26,26,26,26,26,26,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,3221225474,26,26,24,4,4,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,3221225474,26,26,20,2684354563,2684354563,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,29,26,26,26,26,26,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,17,26,26,24,3221225477,3221225477,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,3221225479,26,26,7,12,12,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,3221225479,26,26,7,12,12,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,17,26,26,20,3221225473,3221225473,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,17,26,26,26,26,26,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,14,3221225502,3221225502,22,8,8,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,12,12,12,12,12,12,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,12,12,12,12,12,12,12,12,12,12,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27
+</data>
+ </layer>
+ <objectgroup id="5" name="Jugadores">
+  <object id="45" name="Jugador_1" type="Jugador" x="1408" y="1792" width="128" height="128"/>
+  <object id="46" name="Jugador_2" type="Jugador" x="1408" y="1664" width="128" height="128"/>
+ </objectgroup>
+ <objectgroup id="2" name="Colisionables">
+  <object id="1" type="Colisionable" x="896" y="896" width="256" height="1536"/>
+  <object id="3" type="Colisionable" x="1920" y="896" width="256" height="1536"/>
+  <object id="4" type="Colisionable" x="1664" y="1792" width="256" height="256"/>
+  <object id="5" type="Colisionable" x="896" y="2432" width="1280" height="256"/>
+  <object id="8" type="Colisionable" x="1536" y="1280" width="128" height="256"/>
+  <object id="9" type="Colisionable" x="1536" y="1664" width="128" height="128"/>
+  <object id="11" type="Colisionable" x="1152" y="2048" width="128" height="256"/>
+  <object id="12" type="Colisionable" x="1152" y="2304" width="512" height="128"/>
+  <object id="47" type="Colisionable" x="1792" y="896" width="128" height="128"/>
+  <object id="48" type="Colisionable" x="1152" y="896" width="768" height="128"/>
+  <object id="49" type="Colisionable" x="1152" y="1280" width="128" height="1023.98"/>
+  <object id="50" type="Colisionable" x="1152" y="2304" width="768" height="128"/>
+  <object id="51" type="Colisionable" x="1536" y="1664" width="384" height="512"/>
+  <object id="52" type="Colisionable" x="1536" y="1280" width="384" height="256"/>
+ </objectgroup>
+ <objectgroup id="3" name="Interactuables">
+  <object id="14" name="Freidora" type="Interactuable" x="1152" y="1280" width="128" height="128"/>
+  <object id="15" name="Freidora" type="Interactuable" x="1152" y="1408" width="128" height="128"/>
+  <object id="16" name="Horno" type="Interactuable" x="1152" y="1792" width="128" height="128"/>
+  <object id="17" name="Horno" type="Interactuable" x="1152" y="1920" width="128" height="128"/>
+  <object id="18" name="Horno" type="Interactuable" x="1536" y="1792" width="128" height="128"/>
+  <object id="20" name="Horno" type="Interactuable" x="1536" y="1920" width="128" height="128"/>
+  <object id="21" name="Cafetera" type="Interactuable" x="1664" y="2048" width="128" height="128"/>
+  <object id="22" name="Cafetera" type="Interactuable" x="1792" y="2048" width="128" height="128"/>
+  <object id="23" name="Tostadora" type="Interactuable" x="1664" y="2304" width="128" height="128"/>
+  <object id="25" name="Tostadora" type="Interactuable" x="1792" y="2304" width="128" height="128"/>
+  <object id="27" name="AreaEnsamblaje" type="Interactuable" x="1664" y="1280" width="128" height="128"/>
+  <object id="28" name="AreaEnsamblaje" type="Interactuable" x="1792" y="1280" width="128" height="128"/>
+  <object id="29" name="MaquinaEnvasadora" type="Interactuable" x="1664" y="1408" width="128" height="128"/>
+  <object id="30" name="MaquinaEnvasadora" type="Interactuable" x="1792" y="1408" width="128" height="128"/>
+  <object id="35" name="CajaRegistradora" type="Interactuable" x="1152" y="896" width="128" height="128"/>
+  <object id="36" name="CajaRegistradora" type="Interactuable" x="1280" y="896" width="128" height="128"/>
+  <object id="37" name="MesaRetiro" type="Interactuable" x="1536" y="896" width="128" height="128"/>
+  <object id="38" name="MesaRetiro" type="Interactuable" x="1664" y="896" width="128" height="128"/>
+  <object id="41" name="Fuente" type="Interactuable" x="1280" y="2304" width="128" height="128"/>
+  <object id="42" name="Fuente" type="Interactuable" x="1408" y="2304" width="130.667" height="129.333"/>
+  <object id="43" name="CajaVirtual" type="Interactuable" x="1408" y="896" width="128" height="128"/>
+  <object id="53" name="Basurero" type="Interactuable" x="1152" y="1536" width="128" height="128"/>
+ </objectgroup>
+</map>
