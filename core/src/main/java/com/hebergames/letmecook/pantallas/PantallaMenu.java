@@ -63,7 +63,7 @@ public class PantallaMenu extends Pantalla {
         });
 
         opcionesInteractuables[1] = new TextoInteractuable(opcionesTexto[1], () ->
-            System.out.println("Acá debería entrar al modo multijugador online"));
+            Pantalla.cambiarPantalla(new PantallaConexion()));
 
         opcionesInteractuables[2] = new TextoInteractuable(opcionesTexto[2], () ->
             cambiarPantalla(new PantallaTutorial()));
