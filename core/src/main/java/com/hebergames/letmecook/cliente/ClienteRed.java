@@ -15,10 +15,16 @@ public class ClienteRed {
     private ExecutorService executor;
     private PaqueteEstado ultimoEstado;
     private boolean esperandoJugadores;
+    private boolean servidorCerrado;
+    private String razonDesconexion;
+    private boolean jugadorDesconectado;
 
     public ClienteRed() {
         executor = Executors.newSingleThreadExecutor();
         esperandoJugadores = true;
+        servidorCerrado = false;
+        razonDesconexion = "";
+        jugadorDesconectado = false;
     }
 
     public boolean conectar(String ipServidor) {
@@ -77,6 +83,10 @@ public class ClienteRed {
                     ultimoEstado = (PaqueteEstado) recibido;
                     esperandoJugadores = false;
                     System.out.println("Estado actualizado! Saliendo de espera...");
+                } else if (recibido instanceof PaqueteDesconexion) {
+                    PaqueteDesconexion desc = (PaqueteDesconexion) recibido;
+                    manejarDesconexionRecibida(desc);
+                    break; // Salir del loop
                 }
 
             } catch (SocketTimeoutException e) {
@@ -89,6 +99,31 @@ public class ClienteRed {
             }
         }
     }
+
+    private void manejarDesconexionRecibida(PaqueteDesconexion desc) {
+        System.out.println("⚠️ Desconexión recibida: " + desc.getRazon());
+
+        switch (desc.getRazon()) {
+            case "CIERRE_SERVIDOR":
+                servidorCerrado = true;
+                razonDesconexion = "El servidor se ha cerrado";
+                break;
+            case "JUGADOR_ABANDONO":
+                jugadorDesconectado = true;
+                razonDesconexion = "Un jugador abandonó la partida";
+                break;
+            case "TIMEOUT":
+                jugadorDesconectado = true;
+                razonDesconexion = "Se perdió la conexión con un jugador";
+                break;
+        }
+
+        conectado = false;
+    }
+
+    public boolean isServidorCerrado() { return servidorCerrado; }
+    public boolean isJugadorDesconectado() { return jugadorDesconectado; }
+    public String getRazonDesconexion() { return razonDesconexion; }
 
     private void enviarPingsAutomaticos() {
         while (conectado) {
@@ -111,6 +146,20 @@ public class ClienteRed {
         PaqueteInput input = new PaqueteInput(idJugador, arriba, abajo,
                                               izquierda, derecha, correr);
         enviarPaquete(input);
+    }
+
+    public void enviarInteraccion(int indexEstacion, PaqueteInteraccion.TipoInteraccion tipo) {
+        if (!conectado) return;
+
+        PaqueteInteraccion interaccion = new PaqueteInteraccion(idJugador, indexEstacion, tipo);
+        enviarPaquete(interaccion);
+    }
+
+    public void enviarInteraccion(int indexEstacion, PaqueteInteraccion.TipoInteraccion tipo, int parametro) {
+        if (!conectado) return;
+
+        PaqueteInteraccion interaccion = new PaqueteInteraccion(idJugador, indexEstacion, tipo, parametro);
+        enviarPaquete(interaccion);
     }
 
     private void enviarPaquete(PaqueteRed paquete) {

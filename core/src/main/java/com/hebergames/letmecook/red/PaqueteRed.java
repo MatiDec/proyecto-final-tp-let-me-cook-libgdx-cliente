@@ -10,7 +10,8 @@ public abstract class PaqueteRed implements Serializable {
         ESTADO_JUEGO,
         INPUT_JUGADOR,
         PING,
-        DESCONEXION
+        DESCONEXION,
+        INTERACCION
     }
 
     public abstract TipoPaquete getTipo();

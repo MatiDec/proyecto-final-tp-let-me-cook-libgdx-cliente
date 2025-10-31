@@ -9,7 +9,7 @@ public class PaqueteEstado extends PaqueteRed {
     private DatosJugador jugador1;
     private DatosJugador jugador2;
     private ArrayList<DatosCliente> clientes;
-    private ArrayList<DatosEstacionProcesadora> estaciones;
+    private ArrayList<DatosEstacion> estaciones;
     private int puntaje;
     private int tiempoRestante;
     private boolean juegoTerminado;
@@ -17,7 +17,7 @@ public class PaqueteEstado extends PaqueteRed {
 
     public PaqueteEstado(DatosJugador j1, DatosJugador j2,
                          ArrayList<DatosCliente> clientes,
-                         ArrayList<DatosEstacionProcesadora> estaciones,
+                         ArrayList<DatosEstacion> estaciones,
                          int puntaje, int tiempoRestante,
                          boolean juegoTerminado, String razonFin) {
         this.jugador1 = j1;
@@ -28,6 +28,10 @@ public class PaqueteEstado extends PaqueteRed {
         this.tiempoRestante = tiempoRestante;
         this.juegoTerminado = juegoTerminado;
         this.razonFin = razonFin;
+    }
+
+    public ArrayList<DatosEstacion> getEstaciones() {
+        return estaciones;
     }
 
     @Override
@@ -45,10 +49,6 @@ public class PaqueteEstado extends PaqueteRed {
 
     public ArrayList<DatosCliente> getClientes() {
         return clientes;
-    }
-
-    public ArrayList<DatosEstacionProcesadora> getEstaciones() {
-        return estaciones;
     }
 
     public int getPuntaje() {

@@ -167,7 +167,7 @@ public class PantallaMenu extends Pantalla {
 
     @Override
     public void hide() {
-
+        Gdx.input.setInputProcessor(null);
     }
 
     @Override
