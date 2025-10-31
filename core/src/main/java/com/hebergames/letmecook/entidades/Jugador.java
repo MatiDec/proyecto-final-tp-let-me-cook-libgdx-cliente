@@ -137,6 +137,15 @@ public class Jugador {
     }
 
     public void dibujar(SpriteBatch batch) {
+        if (frameActual == null) {
+            // Si no hay frame, intentar obtener uno de la animación
+            if (animacion != null) {
+                frameActual = animacion.getKeyFrame(0, true);
+            }
+            // Si sigue siendo null, no dibujar
+            if (frameActual == null) return;
+        }
+
         TextureRegion frame = frameActual;
 
         float x = posicion.x;

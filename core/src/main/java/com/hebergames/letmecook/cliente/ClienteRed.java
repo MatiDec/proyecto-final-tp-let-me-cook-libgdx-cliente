@@ -32,13 +32,11 @@ public class ClienteRed {
             socket = new DatagramSocket();
             direccionServidor = InetAddress.getByName(ipServidor);
 
-            // Enviar solicitud de conexión
             enviarPaquete(new PaqueteConexion(0, false));
 
-            // Esperar respuesta
             byte[] buffer = new byte[4096];
             DatagramPacket paquete = new DatagramPacket(buffer, buffer.length);
-            socket.setSoTimeout(5000); // 5 segundos timeout
+            socket.setSoTimeout(5000);
 
             socket.receive(paquete);
             PaqueteRed respuesta = PaqueteRed.deserializar(paquete.getData());
@@ -51,7 +49,6 @@ public class ClienteRed {
 
                     System.out.println("Conectado como Jugador " + idJugador);
 
-                    // Iniciar hilos de recepción y ping
                     executor.execute(this::recibirEstados);
                     executor.execute(this::enviarPingsAutomaticos);
 
@@ -77,16 +74,13 @@ public class ClienteRed {
 
                 PaqueteRed recibido = PaqueteRed.deserializar(paquete.getData());
 
-                System.out.println("Paquete recibido: " + recibido.getTipo());
-
                 if (recibido instanceof PaqueteEstado) {
                     ultimoEstado = (PaqueteEstado) recibido;
                     esperandoJugadores = false;
-                    System.out.println("Estado actualizado! Saliendo de espera...");
                 } else if (recibido instanceof PaqueteDesconexion) {
                     PaqueteDesconexion desc = (PaqueteDesconexion) recibido;
                     manejarDesconexionRecibida(desc);
-                    break; // Salir del loop
+                    break;
                 }
 
             } catch (SocketTimeoutException e) {
@@ -120,10 +114,6 @@ public class ClienteRed {
 
         conectado = false;
     }
-
-    public boolean isServidorCerrado() { return servidorCerrado; }
-    public boolean isJugadorDesconectado() { return jugadorDesconectado; }
-    public String getRazonDesconexion() { return razonDesconexion; }
 
     private void enviarPingsAutomaticos() {
         while (conectado) {
@@ -177,6 +167,10 @@ public class ClienteRed {
         return ultimoEstado;
     }
 
+    public boolean isConectado() {
+        return conectado;
+    }
+
     public boolean isEsperandoJugadores() {
         return esperandoJugadores;
     }
@@ -195,5 +189,17 @@ public class ClienteRed {
             executor.shutdown();
             socket.close();
         }
+    }
+
+    public String getRazonDesconexion() {
+        return this.razonDesconexion;
+    }
+
+    public boolean isJugadorDesconectado() {
+        return this.jugadorDesconectado;
+    }
+
+    public boolean isServidorCerrado() {
+        return this.servidorCerrado;
     }
 }

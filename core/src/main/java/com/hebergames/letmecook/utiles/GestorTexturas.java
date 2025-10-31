@@ -47,6 +47,7 @@ public class GestorTexturas {
 
     public void cargarTexturas() {
         if (texturasListas) return;
+        System.out.println("Cargando texturas del juego...");
 
         // Cargar clientes
         texturaClientes = new Texture(Gdx.files.internal(Recursos.CLIENTES_SPRITESHEET));
@@ -148,6 +149,7 @@ public class GestorTexturas {
         cargarTexturasMaquinas();
 
         texturasListas = true;
+        System.out.println("Texturas cargadas correctamente");
     }
 
     private void cargarTexturasMaquinas() {

@@ -7,10 +7,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.cliente.ClienteRed;
 import com.hebergames.letmecook.elementos.Texto;
-import com.hebergames.letmecook.entidades.clientes.VisualizadorClienteRed;
+import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.eventos.entrada.DatosEntrada;
 import com.hebergames.letmecook.mapa.GestorMapa;
@@ -30,6 +31,10 @@ public class PantallaJuegoOnline extends Pantalla {
     private GestorUIJuego gestorUI;
     private GestorMapa gestorMapa;
     private GestorAnimacion gestorAnimacion;
+    private Jugador jugador1Local;
+    private Jugador jugador2Local;
+    private GestorAnimacion gestorAnimacionJ1;
+    private GestorAnimacion gestorAnimacionJ2;
 
     // Estado visual de jugadores
     private Vector2 posicionJ1;
@@ -46,15 +51,15 @@ public class PantallaJuegoOnline extends Pantalla {
 
     private VisualizadorMenuEstacion visualizadorMenu;
     private boolean jugadorEnMenu = false;
-
-    // Visualizadores de clientes
-    private Map<Integer, VisualizadorClienteRed> visualizadoresClientes;
+    private boolean juegoFinalizado = false;
+    private float tiempoUltimaActualizacion = 0;
+    private static final float INTERVALO_ACTUALIZACION_UI = 0.1f; // Actualizar UI cada 100ms
 
     public PantallaJuegoOnline(ClienteRed cliente) {
         this.cliente = cliente;
         this.miIdJugador = cliente.getIdJugador();
         this.inputLocal = new DatosEntrada();
-        this.visualizadoresClientes = new HashMap<>();
+        this.visualizadorMenu = new VisualizadorMenuEstacion();
 
         posicionJ1 = new Vector2();
         posicionJ2 = new Vector2();
@@ -64,43 +69,60 @@ public class PantallaJuegoOnline extends Pantalla {
 
     @Override
     public void show() {
+        GestorTexturas.getInstance().cargarTexturas();
         batch = Render.batch;
         gestorViewport = new GestorViewport();
         gestorUI = new GestorUIJuego();
-        visualizadorMenu = new VisualizadorMenuEstacion();
 
-        // Inicializar visualizadores de clientes (se mantiene el código existente)
-        visualizadoresClientes = new HashMap<>();
-
-        // Cargar mapa (solo visual)
         GestorPartida gestorPartida = GestorPartida.getInstancia();
         if (gestorPartida.getNivelActual() == null) {
             ArrayList<String> rutasMapas = new ArrayList<>();
             rutasMapas.add(Recursos.RUTA_MAPAS + "Sucursal_1.tmx");
-            gestorPartida.generarNuevaPartida(rutasMapas, 1);
+            gestorPartida.generarNuevaPartida(rutasMapas, 1); // Cliente con renderizado
         }
 
         NivelPartida nivel = gestorPartida.getNivelActual();
         gestorMapa = new GestorMapa();
         gestorMapa.setMapaActual(nivel.getMapa());
 
-        // Animaciones para visualización
-        gestorAnimacion = new GestorAnimacion(
-            Recursos.JUGADOR_SPRITESHEET, 32, 32, 0.2f
-        );
+        gestorAnimacionJ1 = new GestorAnimacion(Recursos.JUGADOR_SPRITESHEET, 32, 32, 0.2f);
+        gestorAnimacionJ2 = new GestorAnimacion(Recursos.JUGADOR_SPRITESHEET, 32, 32, 0.2f);
+
+        // Crear jugadores locales solo para visualización
+        jugador1Local = new Jugador(0, 0, gestorAnimacionJ1);
+        jugador2Local = new Jugador(0, 0, gestorAnimacionJ2);
+
+        // Forzar inicialización del frame
+        jugador1Local.actualizar(0);
+        jugador2Local.actualizar(0);
     }
 
     @Override
     public void render(float delta) {
+        if (juegoFinalizado) return;
+
+        // Verificar desconexión del servidor
+        if (cliente.isServidorCerrado() || cliente.isJugadorDesconectado()) {
+            finalizarPorDesconexion();
+            return;
+        }
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         capturarInput();
         enviarInputAlServidor();
-        actualizarEstadoDesdeServidor();
+
+        // Solo actualizar estado desde servidor cada cierto intervalo
+        tiempoUltimaActualizacion += delta;
+        if (tiempoUltimaActualizacion >= INTERVALO_ACTUALIZACION_UI) {
+            actualizarEstadoDesdeServidor();
+            actualizarMenusEstaciones();
+            tiempoUltimaActualizacion = 0;
+        }
 
         renderizarJuego(delta);
-        renderizarIndicadorEstacion(); // 👈 NUEVO
+        renderizarIndicadorEstacion();
         renderizarUI();
 
         verificarFinJuego();
@@ -152,44 +174,32 @@ public class PantallaJuegoOnline extends Pantalla {
         PaqueteEstado estado = cliente.getUltimoEstado();
         if (estado == null) return;
 
-        // Actualizar posiciones y estados de jugadores
         DatosJugador datosJ1 = estado.getJugador1();
         DatosJugador datosJ2 = estado.getJugador2();
 
+        // Actualizar posiciones y estados de jugadores locales
         if (datosJ1 != null) {
-            posicionJ1.set(datosJ1.x, datosJ1.y);
-            anguloJ1 = datosJ1.angulo;
-            objetoJ1 = datosJ1.objetoEnMano;
+            jugador1Local.getPosicion().set(datosJ1.x, datosJ1.y);
+            jugador1Local.setAnguloRotacion(datosJ1.angulo);
+            jugador1Local.setObjetoEnMano(datosJ1.objetoEnMano);
         }
 
         if (datosJ2 != null) {
-            posicionJ2.set(datosJ2.x, datosJ2.y);
-            anguloJ2 = datosJ2.angulo;
-            objetoJ2 = datosJ2.objetoEnMano;
+            jugador2Local.getPosicion().set(datosJ2.x, datosJ2.y);
+            jugador2Local.setAnguloRotacion(datosJ2.angulo);
+            jugador2Local.setObjetoEnMano(datosJ2.objetoEnMano);
         }
 
-        // Actualizar clientes visuales
-        for (DatosCliente datosCliente : estado.getClientes()) {
-            if (!visualizadoresClientes.containsKey(datosCliente.id)) {
-                visualizadoresClientes.put(datosCliente.id,
-                    new VisualizadorClienteRed(datosCliente));
-            } else {
-                visualizadoresClientes.get(datosCliente.id).actualizar(datosCliente);
-            }
-        }
-
-        // Remover clientes que ya no existen
-        Set<Integer> idsActuales = new HashSet<>();
+        // Actualizar clientes (crear/actualizar visualizadores)
+        Map<Integer, DatosCliente> clientesActuales = new HashMap<>();
         for (DatosCliente dc : estado.getClientes()) {
-            idsActuales.add(dc.id);
+            clientesActuales.put(dc.id, dc);
         }
-        visualizadoresClientes.keySet().retainAll(idsActuales);
 
-        // Actualizar UI
+        // Actualizar gestorUI
         gestorUI.actualizarPuntaje(estado.getPuntaje());
         gestorUI.actualizarTiempo(estado.getTiempoRestante());
-        // Actualizar menús según estado del jugador local
-        actualizarMenusEstaciones();
+        gestorUI.actualizarInventario(datosJ1.objetoEnMano, datosJ2.objetoEnMano);
     }
 
     private void actualizarMenusEstaciones() {
@@ -249,36 +259,57 @@ public class PantallaJuegoOnline extends Pantalla {
     private void renderizarJuego(float delta) {
         gestorViewport.getViewportJuego().apply();
 
-        // Centrar cámara en jugador local
-        Vector2 posJugadorLocal = (miIdJugador == 1) ? posicionJ1 : posicionJ2;
-        gestorViewport.getCamaraJuego().position.set(
-            posJugadorLocal.x + 64, posJugadorLocal.y + 64, 0
-        );
-        gestorViewport.getCamaraJuego().update();
+        Vector2 posJugadorLocal = (miIdJugador == 1) ?
+            jugador1Local.getPosicion() : jugador2Local.getPosicion();
+
+        gestorViewport.actualizarCamaraDinamica(jugador1Local, jugador2Local);
 
         gestorMapa.renderizar(gestorViewport.getCamaraJuego());
 
         batch.setProjectionMatrix(gestorViewport.getCamaraJuego().combined);
         batch.begin();
 
-        // Dibujar jugador 1
-        dibujarJugador(posicionJ1.x, posicionJ1.y, anguloJ1, objetoJ1);
+        jugador1Local.dibujar(batch);
+        jugador2Local.dibujar(batch);
 
-        // Dibujar jugador 2
-        dibujarJugador(posicionJ2.x, posicionJ2.y, anguloJ2, objetoJ2);
+        // Dibujar clientes usando VisualizadorCliente normal
+        PaqueteEstado estado = cliente.getUltimoEstado();
+        if (estado != null) {
+            for (DatosCliente dc : estado.getClientes()) {
+                dibujarClienteDesdeServidor(dc);
+            }
 
-        // Dibujar clientes
-        for (VisualizadorClienteRed vis : visualizadoresClientes.values()) {
-            vis.dibujar(batch, gestorMapa.getEstaciones());
+//            // Dibujar estados de estaciones
+//            for (DatosEstacion de : estado.getEstaciones()) {
+//                dibujarEstadoEstacion(de);
+//            }
         }
 
-        // Dibujar objetos en estaciones
-        dibujarObjetosEstaciones();
-        // Dibujar indicadores de procesadoras
-        dibujarIndicadoresProcesadoras();
-        // Dibujar progreso de bebidas
-        dibujarProgresoBebidasPreparando();
         batch.end();
+    }
+
+    private void dibujarClienteDesdeServidor(DatosCliente datos) {
+        if (datos.indexEstacion < 0 || datos.indexEstacion >= gestorMapa.getEstaciones().size()) {
+            return;
+        }
+
+        EstacionTrabajo estacion = gestorMapa.getEstaciones().get(datos.indexEstacion);
+        Rectangle area = estacion.area;
+        float x = area.x + (area.width / 2f) - (64 / 2f);
+        float y = area.y + area.height;
+
+        TextureRegion texturaCliente = GestorTexturas.getInstance().getTexturaCliente();
+        if (texturaCliente != null) {
+            batch.draw(texturaCliente, x, y, 64, 64);
+        }
+
+        // Dibujar barra de tolerancia
+        TextureRegion cara = GestorTexturas.getInstance().getCaraPorTolerancia(datos.porcentajeTolerancia);
+        if (cara != null) {
+            float xCara = x + 32 - 12f;
+            float yCara = y + 64 + 4f;
+            batch.draw(cara, xCara, yCara, 24f, 24f);
+        }
     }
 
     private void renderizarIndicadorEstacion() {
@@ -518,8 +549,27 @@ public class PantallaJuegoOnline extends Pantalla {
         }
     }
 
+    private void finalizarPorDesconexion() {
+        if (juegoFinalizado) return;
+
+        juegoFinalizado = true;
+
+        String razon = "Conexión perdida con el servidor";
+        if (cliente.isJugadorDesconectado()) {
+            razon = cliente.getRazonDesconexion();
+        }
+
+        System.out.println("Finalizando por desconexión: " + razon);
+
+        Gdx.app.postRunnable(() -> {
+            cliente.desconectar();
+            Pantalla.cambiarPantalla(new PantallaMenu());
+        });
+    }
+
     private void detectarEstacionCercana() {
-        Vector2 posJugadorLocal = (miIdJugador == 1) ? posicionJ1 : posicionJ2;
+        Vector2 posJugadorLocal = (miIdJugador == 1) ?
+            jugador1Local.getPosicion() : jugador2Local.getPosicion(); // Cambiar de posicionJ1/J2 a jugador1Local/jugador2Local
 
         estacionCercanaIndex = -1;
         float distanciaMinima = DISTANCIA_INTERACCION;
@@ -530,7 +580,7 @@ public class PantallaJuegoOnline extends Pantalla {
             float centroEstacionX = estacion.area.x + estacion.area.width / 2f;
             float centroEstacionY = estacion.area.y + estacion.area.height / 2f;
 
-            float centroJugadorX = posJugadorLocal.x + 64; // mitad del sprite
+            float centroJugadorX = posJugadorLocal.x + 64;
             float centroJugadorY = posJugadorLocal.y + 64;
 
             float dx = centroJugadorX - centroEstacionX;
@@ -564,7 +614,9 @@ public class PantallaJuegoOnline extends Pantalla {
 
     @Override
     public void dispose() {
-        if (cliente != null) {
+        juegoFinalizado = true;
+
+        if (cliente != null && cliente.isConectado()) {
             cliente.desconectar();
         }
         if (gestorUI != null) {

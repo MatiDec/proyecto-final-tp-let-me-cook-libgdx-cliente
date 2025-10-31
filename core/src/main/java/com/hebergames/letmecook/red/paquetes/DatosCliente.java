@@ -3,7 +3,6 @@ package com.hebergames.letmecook.red.paquetes;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-// === DATOS CLIENTE ===
 public class DatosCliente implements Serializable {
     public int id;
     public float tiempoRestante;
