@@ -11,6 +11,7 @@ import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.eventos.entrada.Entrada;
 import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
 import com.hebergames.letmecook.pantallas.Pantalla;
+import com.hebergames.letmecook.pantallas.PantallaJuegoOnline;
 import com.hebergames.letmecook.pantallas.PantallaMenu;
 import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
 import com.hebergames.letmecook.pantallas.opciones.ControlVolumen;
@@ -21,8 +22,8 @@ import com.hebergames.letmecook.utiles.Render;
 
 public class PantallaPausa extends Pantalla {
 
-    private final PantallaJuego PANTALLA_JUEGO;
     private final SpriteBatch BATCH;
+    private final Pantalla pantallaAnterior;
 
     private Texto oContinuar, oMenuPrincipal;
     private Texto tPantallaCompleta, tAplicar;
@@ -33,8 +34,8 @@ public class PantallaPausa extends Pantalla {
     private final Viewport VIEWPORT;
     private final OrthographicCamera CAMARA;
 
-    public PantallaPausa(PantallaJuego pantallaJuego) {
-        this.PANTALLA_JUEGO = pantallaJuego;
+    public PantallaPausa(Pantalla pantallaAnterior) {
+        this.pantallaAnterior = pantallaAnterior;
         this.BATCH = Render.batch;
         this.CAMARA = new OrthographicCamera();
         this.VIEWPORT = new ScreenViewport(CAMARA);
@@ -80,11 +81,19 @@ public class PantallaPausa extends Pantalla {
 
     private void registrarEntradas() {
         entrada.registrar(new TextoInteractuable(oContinuar, () -> {
-            PANTALLA_JUEGO.reanudarJuego();
+            if (pantallaAnterior instanceof PantallaJuego) {
+                ((PantallaJuego) pantallaAnterior).reanudarJuego();
+            } else if (pantallaAnterior instanceof PantallaJuegoOnline) {
+                ((PantallaJuegoOnline)pantallaAnterior).reanudarJuego();
+            }
         }));
 
         entrada.registrar(new TextoInteractuable(oMenuPrincipal, () -> {
-            PANTALLA_JUEGO.detenerHilos();
+            if (pantallaAnterior instanceof  PantallaJuego) {
+                ((PantallaJuego) pantallaAnterior).detenerHilos();
+            } else if (pantallaAnterior instanceof PantallaJuegoOnline) {
+                pantallaAnterior.dispose();
+            }
             cambiarPantalla(new PantallaMenu());
         }));
 

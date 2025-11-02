@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class PantallaCalendario extends Pantalla {
     private final SpriteBatch BATCH;
-    private final PantallaJuego PANTALLA_JUEGO;
+    private Pantalla pantallaAnterior;
 
     private final GestorPartida GESTOR_PARTIDA;
     private final Viewport VIEWPORT;
@@ -28,8 +28,8 @@ public class PantallaCalendario extends Pantalla {
     private Texto tituloCalendario;
     private final ArrayList<InfoDiaNivel> DIAS_NIVELES;
 
-    public PantallaCalendario(PantallaJuego PANTALLA_JUEGO) {
-        this.PANTALLA_JUEGO = PANTALLA_JUEGO;
+    public PantallaCalendario(Pantalla pantallaAnterior) {
+        this.pantallaAnterior = pantallaAnterior;
         this.BATCH = Render.batch;
         this.CAMARA = new OrthographicCamera();
         this.VIEWPORT = new ScreenViewport(CAMARA);

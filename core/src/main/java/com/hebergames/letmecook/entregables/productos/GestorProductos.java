@@ -114,4 +114,17 @@ public class GestorProductos {
 
         return tipo.crear();
     }
+
+    public Producto obtenerProductoPorNombre(String nombreProducto) {
+        Producto p = new ProductoGenerico("a", null, CategoriaProducto.INVALIDO);
+         boolean encontrado = false;
+         int i = 0;
+         while (i < PRODUCTOS_DISPONIBLES.size() && !encontrado) {
+             if (p.getNombre().equalsIgnoreCase(nombreProducto)) {
+                 return p;
+             }
+             i++;
+         }
+         return null;
+    }
 }

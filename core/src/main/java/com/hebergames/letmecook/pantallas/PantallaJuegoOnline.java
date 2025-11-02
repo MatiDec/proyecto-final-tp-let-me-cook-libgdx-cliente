@@ -12,14 +12,38 @@ import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.cliente.ClienteRed;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.Jugador;
+import com.hebergames.letmecook.entidades.clientes.Cliente;
+import com.hebergames.letmecook.entidades.clientes.GestorClientes;
+import com.hebergames.letmecook.entidades.clientes.TipoCliente;
+import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
+import com.hebergames.letmecook.entregables.productos.GestorProductos;
+import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
+import com.hebergames.letmecook.estaciones.interaccionclientes.CajaRegistradora;
+import com.hebergames.letmecook.estaciones.interaccionclientes.CajaVirtual;
+import com.hebergames.letmecook.estaciones.interaccionclientes.MesaRetiro;
+import com.hebergames.letmecook.estaciones.procesadoras.Procesadora;
 import com.hebergames.letmecook.eventos.entrada.DatosEntrada;
+import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
+import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
+import com.hebergames.letmecook.eventos.puntaje.GestorPuntaje;
 import com.hebergames.letmecook.mapa.GestorMapa;
+import com.hebergames.letmecook.mapa.indicadores.GestorIndicadores;
 import com.hebergames.letmecook.mapa.niveles.*;
+import com.hebergames.letmecook.pantallas.juego.GestorTiempoJuego;
 import com.hebergames.letmecook.pantallas.juego.GestorUIJuego;
 import com.hebergames.letmecook.pantallas.juego.GestorViewport;
+import com.hebergames.letmecook.pantallas.superposiciones.GestorMostrarCalendario;
+import com.hebergames.letmecook.pantallas.superposiciones.GestorPantallasOverlay;
+import com.hebergames.letmecook.pantallas.superposiciones.PantallaCalendario;
+import com.hebergames.letmecook.pantallas.superposiciones.PantallaPausa;
+import com.hebergames.letmecook.pedidos.EstadoPedido;
+import com.hebergames.letmecook.pedidos.GestorPedidos;
 import com.hebergames.letmecook.red.VisualizadorMenuEstacion;
 import com.hebergames.letmecook.red.paquetes.*;
+import com.hebergames.letmecook.sonido.CancionNivel;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.*;
 
 import java.util.*;
@@ -35,12 +59,34 @@ public class PantallaJuegoOnline extends Pantalla {
     private Jugador jugador2Local;
     private GestorAnimacion gestorAnimacionJ1;
     private GestorAnimacion gestorAnimacionJ2;
+    private GestorTiempoJuego gestorTiempo;
+    private GestorIndicadores gestorIndicadores;
+    private GestorMostrarCalendario gestorMostrarCalendario;
+    private GestorPantallasOverlay gestorOverlays;
+    private GestorAudio gestorAudio;
+    private ArrayList<EstacionTrabajo> estaciones;
+    private GestorClientes gestorClientes;
+    private GestorPedidos gestorPedidos;
+    private GestorPuntaje gestorPuntaje;
+    private boolean despedido = false;
+    private String razonDespido = "";
+
+    private GestorProductos gestorProductos;
+
+    private static final int TIEMPO_OBJETIVO = 200;
 
     // Estado visual de jugadores
     private Vector2 posicionJ1;
     private Vector2 posicionJ2;
     private float anguloJ1, anguloJ2;
     private String objetoJ1, objetoJ2;
+
+    // Interpolación de movimiento
+    private Vector2 posicionAnteriorJ1 = new Vector2();
+    private Vector2 posicionAnteriorJ2 = new Vector2();
+    private float anguloAnteriorJ1 = 0f;
+    private float anguloAnteriorJ2 = 0f;
+    private static final float SUAVIZADO_MOVIMIENTO = 1f; // Mayor = más suave pero con delay
 
     // Input local
     private DatosEntrada inputLocal;
@@ -60,6 +106,7 @@ public class PantallaJuegoOnline extends Pantalla {
         this.miIdJugador = cliente.getIdJugador();
         this.inputLocal = new DatosEntrada();
         this.visualizadorMenu = new VisualizadorMenuEstacion();
+        this.gestorProductos = new GestorProductos();
 
         posicionJ1 = new Vector2();
         posicionJ2 = new Vector2();
@@ -74,16 +121,35 @@ public class PantallaJuegoOnline extends Pantalla {
         gestorViewport = new GestorViewport();
         gestorUI = new GestorUIJuego();
 
+        // Inicializar gestores adicionales
+        gestorTiempo = new GestorTiempoJuego(TIEMPO_OBJETIVO);
+        gestorIndicadores = new GestorIndicadores();
+        gestorAudio = GestorAudio.getInstance();
+        gestorPuntaje = new GestorPuntaje();
+        gestorMostrarCalendario = new GestorMostrarCalendario();
+
         GestorPartida gestorPartida = GestorPartida.getInstancia();
         if (gestorPartida.getNivelActual() == null) {
             ArrayList<String> rutasMapas = new ArrayList<>();
             rutasMapas.add(Recursos.RUTA_MAPAS + "Sucursal_1.tmx");
-            gestorPartida.generarNuevaPartida(rutasMapas, 1); // Cliente con renderizado
+            gestorPartida.generarNuevaPartida(rutasMapas, 1);
         }
 
         NivelPartida nivel = gestorPartida.getNivelActual();
         gestorMapa = new GestorMapa();
         gestorMapa.setMapaActual(nivel.getMapa());
+
+        estaciones = gestorMapa.getEstaciones();
+
+        // Registrar indicadores de procesadoras
+        for (EstacionTrabajo estacion : estaciones) {
+            if (estacion.getProcesadora() != null && estacion.getProcesadora() instanceof Procesadora) {
+                Procesadora proc = (Procesadora) estacion.getProcesadora();
+                if (proc.getIndicador() != null) {
+                    gestorIndicadores.registrarIndicador(proc.getIndicador());
+                }
+            }
+        }
 
         gestorAnimacionJ1 = new GestorAnimacion(Recursos.JUGADOR_SPRITESHEET, 32, 32, 0.2f);
         gestorAnimacionJ2 = new GestorAnimacion(Recursos.JUGADOR_SPRITESHEET, 32, 32, 0.2f);
@@ -95,6 +161,62 @@ public class PantallaJuegoOnline extends Pantalla {
         // Forzar inicialización del frame
         jugador1Local.actualizar(0);
         jugador2Local.actualizar(0);
+
+        // Inicializar audio y overlays
+        inicializarAudio(nivel);
+        inicializarSistemaPedidos();
+    }
+
+    private void inicializarAudio(NivelPartida nivel) {
+        gestorAudio.cargarTodasLasMusicasNiveles();
+        gestorAudio.cargarTodosLosSonidos();
+
+        TurnoTrabajo turnoActual = nivel.getTurno();
+        CancionNivel cancionNivel = CancionNivel.getPorTurno(turnoActual);
+        gestorAudio.reproducirMusicaNivel(cancionNivel);
+        gestorAudio.pausarMusica();
+
+        PantallaPausa pantallaPausa = new PantallaPausa(this);
+        PantallaCalendario pantallaCalendario = new PantallaCalendario(this);
+        gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio);
+        gestorMostrarCalendario.iniciarMostrar();
+        gestorOverlays.mostrarCalendarioInicial();
+    }
+
+    private void inicializarSistemaPedidos() {
+        ArrayList<CajaRegistradora> cajas = new ArrayList<>();
+        ArrayList<MesaRetiro> mesas = new ArrayList<>();
+        ArrayList<CajaVirtual> cajasVirtuales = new ArrayList<>();
+
+        for (EstacionTrabajo estacion : estaciones) {
+            if (estacion instanceof CajaRegistradora) {
+                cajas.add((CajaRegistradora) estacion);
+            } else if (estacion instanceof MesaRetiro) {
+                mesas.add((MesaRetiro) estacion);
+            } else if (estacion instanceof CajaVirtual) {
+                cajasVirtuales.add((CajaVirtual) estacion);
+            }
+        }
+
+        // Nota: En modo online, el servidor maneja la lógica de clientes
+        // pero mantenemos los gestores para la UI
+        gestorClientes = null; // El servidor maneja esto
+        gestorPedidos = new GestorPedidos(null, mesas); // Parcialmente funcional
+
+        // Configurar callbacks de puntaje para las estaciones
+        for (CajaVirtual cajaVirtual : cajasVirtuales) {
+            cajaVirtual.setGestorPedidos(gestorPedidos);
+            cajaVirtual.setCallbackPuntaje(gestorPuntaje);
+        }
+
+        for (MesaRetiro mesa : mesas) {
+            mesa.setGestorPedidos(gestorPedidos);
+            mesa.setCallbackPuntaje(gestorPuntaje);
+        }
+
+        // Inicializar eventos aleatorios (el servidor los maneja)
+        GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
+        gestorEventos.reset();
     }
 
     @Override
@@ -107,25 +229,65 @@ public class PantallaJuegoOnline extends Pantalla {
             return;
         }
 
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        limpiarPantalla();
+        manejarInput();
+        gestorMostrarCalendario.actualizar(delta);
 
-        capturarInput();
-        enviarInputAlServidor();
+        if (gestorMostrarCalendario.estaMostrando() && gestorOverlays.isCalendarioMostradoAutomaticamente()) {
+            gestorOverlays.cerrarCalendarioAutomatico();
+        }
 
         // Solo actualizar estado desde servidor cada cierto intervalo
         tiempoUltimaActualizacion += delta;
         if (tiempoUltimaActualizacion >= INTERVALO_ACTUALIZACION_UI) {
             actualizarEstadoDesdeServidor();
-            actualizarMenusEstaciones();
+            actualizarEstacionesDesdeServidor();
             tiempoUltimaActualizacion = 0;
         }
 
-        renderizarJuego(delta);
-        renderizarIndicadorEstacion();
-        renderizarUI();
+        if (!gestorOverlays.isCalendarioVisible()) {
+            renderizarJuego(delta);
+            renderizarUI();
+        }
+        renderizarOverlays(delta);
 
         verificarFinJuego();
+    }
+
+    private void limpiarPantalla() {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
+
+    private void manejarInput() {
+        // Manejo de ESC para pausa/cerrar calendario
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            if (gestorOverlays.isCalendarioVisible()) {
+                gestorOverlays.toggleCalendario();
+            } else {
+                togglePausa();
+            }
+        }
+
+        // Manejo de TAB para calendario
+        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
+            if (gestorMostrarCalendario.estaMostrando()) {
+                if (gestorOverlays.isCalendarioVisible()) {
+                    gestorOverlays.toggleCalendario();
+                } else {
+                    if (gestorOverlays.isJuegoEnPausa()) {
+                        togglePausa();
+                    }
+                    gestorOverlays.toggleCalendario();
+                }
+            }
+        }
+
+        // Solo capturar input del juego si no hay overlays activos
+        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible()) {
+            capturarInput();
+            enviarInputAlServidor();
+        }
     }
 
     private void capturarInput() {
@@ -177,37 +339,87 @@ public class PantallaJuegoOnline extends Pantalla {
         DatosJugador datosJ1 = estado.getJugador1();
         DatosJugador datosJ2 = estado.getJugador2();
 
-        // Actualizar posiciones y estados de jugadores locales
+        // Actualizar posiciones y estados de jugadores con interpolación
         if (datosJ1 != null) {
-            jugador1Local.getPosicion().set(datosJ1.x, datosJ1.y);
-            jugador1Local.setAnguloRotacion(datosJ1.angulo);
+            // Guardar posición anterior si es la primera vez
+            if (posicionAnteriorJ1.isZero()) {
+                posicionAnteriorJ1.set(datosJ1.x, datosJ1.y);
+                anguloAnteriorJ1 = datosJ1.angulo;
+            }
+
+            // Interpolación suave de posición (lerp)
+            Vector2 posicionObjetivo = new Vector2(datosJ1.x, datosJ1.y);
+            posicionAnteriorJ1.lerp(posicionObjetivo, SUAVIZADO_MOVIMIENTO);
+            jugador1Local.getPosicion().set(posicionAnteriorJ1);
+
+            // Interpolación suave de ángulo
+            float diferenciaAngulo = datosJ1.angulo - anguloAnteriorJ1;
+            // Normalizar diferencia de ángulo para tomar el camino más corto
+            while (diferenciaAngulo > 180f) diferenciaAngulo -= 360f;
+            while (diferenciaAngulo < -180f) diferenciaAngulo += 360f;
+            anguloAnteriorJ1 += diferenciaAngulo * SUAVIZADO_MOVIMIENTO;
+            jugador1Local.setAnguloRotacion(anguloAnteriorJ1);
+
             jugador1Local.setObjetoEnMano(datosJ1.objetoEnMano);
+
+//            // Aplicar deslizamiento si está corriendo y luego se detiene TODO hacer que DatosJugador traiga estaCorriendo, velocidadX e Y
+//            if (datosJ1.estaCorriendo && datosJ1.velocidadX == 0 && datosJ1.velocidadY == 0) {
+//                jugador1Local.iniciarDeslizamiento();
+//            }
         }
 
         if (datosJ2 != null) {
-            jugador2Local.getPosicion().set(datosJ2.x, datosJ2.y);
-            jugador2Local.setAnguloRotacion(datosJ2.angulo);
+            if (posicionAnteriorJ2.isZero()) {
+                posicionAnteriorJ2.set(datosJ2.x, datosJ2.y);
+                anguloAnteriorJ2 = datosJ2.angulo;
+            }
+
+            Vector2 posicionObjetivo = new Vector2(datosJ2.x, datosJ2.y);
+            posicionAnteriorJ2.lerp(posicionObjetivo, SUAVIZADO_MOVIMIENTO);
+            jugador2Local.getPosicion().set(posicionAnteriorJ2);
+
+            float diferenciaAngulo = datosJ2.angulo - anguloAnteriorJ2;
+            while (diferenciaAngulo > 180f) diferenciaAngulo -= 360f;
+            while (diferenciaAngulo < -180f) diferenciaAngulo += 360f;
+            anguloAnteriorJ2 += diferenciaAngulo * SUAVIZADO_MOVIMIENTO;
+            jugador2Local.setAnguloRotacion(anguloAnteriorJ2);
+
             jugador2Local.setObjetoEnMano(datosJ2.objetoEnMano);
+
+//            if (datosJ2.estaCorriendo && datosJ2.velocidadX == 0 && datosJ2.velocidadY == 0) {
+//                jugador2Local.iniciarDeslizamiento();
+//            }
         }
 
-        // Actualizar clientes (crear/actualizar visualizadores)
-        Map<Integer, DatosCliente> clientesActuales = new HashMap<>();
-        for (DatosCliente dc : estado.getClientes()) {
-            clientesActuales.put(dc.id, dc);
-        }
-
-        // Actualizar gestorUI
+        // Actualizar gestorUI y estaciones
         gestorUI.actualizarPuntaje(estado.getPuntaje());
         gestorUI.actualizarTiempo(estado.getTiempoRestante());
         gestorUI.actualizarInventario(datosJ1.objetoEnMano, datosJ2.objetoEnMano);
     }
 
-    private void actualizarMenusEstaciones() {
+    private void actualizarEstacionesDesdeServidor() {
         PaqueteEstado estado = cliente.getUltimoEstado();
         if (estado == null) return;
 
         DatosJugador datosLocal = (miIdJugador == 1) ? estado.getJugador1() : estado.getJugador2();
 
+        // Actualizar estados de todas las estaciones
+        for (DatosEstacion datosEst : estado.getEstaciones()) {
+            if (datosEst.index < 0 || datosEst.index >= estaciones.size()) continue;
+
+            EstacionTrabajo estacion = estaciones.get(datosEst.index);
+
+            // Actualizar estado de procesadoras
+            if (estacion.getProcesadora() instanceof Procesadora) {
+                Procesadora proc = (Procesadora) estacion.getProcesadora();
+                actualizarEstadoProcesadora(proc, datosEst);
+            }
+
+            // Actualizar estado de máquina rota
+            //estacion.setFueraDeServicio(datosEst.fueraDeServicio);TODO ESTO LO TENGO QUE MODIFICAR CUANDO ADAPTE QUE EL SERVER LEA LAS MAQ ROTAS
+        }
+
+        // Actualizar menú si el jugador está en uno
         if (!datosLocal.estaEnMenu) {
             if (visualizadorMenu.isVisible()) {
                 visualizadorMenu.ocultar();
@@ -216,7 +428,6 @@ public class PantallaJuegoOnline extends Pantalla {
             return;
         }
 
-        // El jugador está en un menú, determinar cuál estación
         if (estacionCercanaIndex < 0) return;
 
         DatosEstacion datosEst = null;
@@ -238,6 +449,7 @@ public class PantallaJuegoOnline extends Pantalla {
                 break;
 
             case "Mesa":
+                // Actualizar menú con los objetos actuales
                 visualizadorMenu.mostrarMenuMesa(esJ1, datosEst.objetosEnEstacion);
                 break;
 
@@ -253,36 +465,79 @@ public class PantallaJuegoOnline extends Pantalla {
                 String nombreIngrediente = datosLocal.objetoEnMano;
                 visualizadorMenu.mostrarMenuEnvasadora(esJ1, nombreIngrediente);
                 break;
+
+            default:
+                // Si es otro tipo de estación con menú, ocultar
+                visualizadorMenu.ocultar();
+                break;
+        }
+    }
+
+    private void actualizarEstadoProcesadora(Procesadora proc, DatosEstacion datosEst) {
+        // Obtener las texturas de la máquina
+        TextureRegion[] texturas = proc.getTexturaActual() != null ?
+            GestorTexturas.getInstance().getTexturasMaquina(datosEst.tipoEstacion.toLowerCase()) : null;
+
+        if (texturas == null) return;
+
+        // Actualizar estado visual según el estado del servidor
+        switch (datosEst.estadoIndicador) {
+            case "ACTIVA":
+                // Máquina activa
+                break;
+            case "LISTA":
+                // Máquina lista
+                break;
+            case "INACTIVO":
+                // Máquina inactiva
+                break;
         }
     }
 
     private void renderizarJuego(float delta) {
         gestorViewport.getViewportJuego().apply();
-
-        Vector2 posJugadorLocal = (miIdJugador == 1) ?
-            jugador1Local.getPosicion() : jugador2Local.getPosicion();
-
         gestorViewport.actualizarCamaraDinamica(jugador1Local, jugador2Local);
 
         gestorMapa.renderizar(gestorViewport.getCamaraJuego());
 
+        // Actualizar indicadores si el juego está activo
+        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && gestorMostrarCalendario.estaMostrando()) {
+            gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
+            gestorAudio.reanudarMusica();
+        }
+
         batch.setProjectionMatrix(gestorViewport.getCamaraJuego().combined);
         batch.begin();
 
+        gestorMapa.actualizarEstaciones(delta);
+        gestorMapa.dibujarIndicadores(batch);
+        gestorIndicadores.dibujar(batch);
+
+        // Dibujar jugadores
         jugador1Local.dibujar(batch);
         jugador2Local.dibujar(batch);
 
-        // Dibujar clientes usando VisualizadorCliente normal
+        // Dibujar estados de procesadoras
+        for (EstacionTrabajo estacion : estaciones) {
+            if (estacion.getProcesadora() instanceof Procesadora) {
+                Procesadora proc = (Procesadora) estacion.getProcesadora();
+                proc.dibujarEstado(batch);
+            }
+        }
+
+        // Dibujar clientes desde el servidor
         PaqueteEstado estado = cliente.getUltimoEstado();
         if (estado != null) {
             for (DatosCliente dc : estado.getClientes()) {
                 dibujarClienteDesdeServidor(dc);
             }
+        }
 
-//            // Dibujar estados de estaciones
-//            for (DatosEstacion de : estado.getEstaciones()) {
-//                dibujarEstadoEstacion(de);
-//            }
+        // Dibujar evento de piso mojado si está activo
+        GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
+        EventoPisoMojado eventoPiso = gestorEventos.getEventoPisoMojado();
+        if (eventoPiso != null) {
+            eventoPiso.dibujar(batch);
         }
 
         batch.end();
@@ -312,241 +567,150 @@ public class PantallaJuegoOnline extends Pantalla {
         }
     }
 
-    private void renderizarIndicadorEstacion() {
-        if (estacionCercanaIndex < 0) return;
-
-        EstacionTrabajo estacion = gestorMapa.getEstaciones().get(estacionCercanaIndex);
-
-        batch.setProjectionMatrix(gestorViewport.getCamaraJuego().combined);
-        batch.begin();
-
-        // Dibujar indicador "E" sobre la estación
-        float x = estacion.area.x + estacion.area.width / 2 - 16;
-        float y = estacion.area.y + estacion.area.height + 40;
-
-        // Aquí podrías dibujar un sprite o texto "E"
-        // Por ahora, solo un rectángulo visual
-        batch.setColor(1f, 1f, 0f, 0.8f); // Amarillo semi-transparente
-        batch.draw(Recursos.PIXEL, x, y, 32, 32);
-        batch.setColor(1f, 1f, 1f, 1f); // Restaurar color
-
-        batch.end();
-    }
-
-    private void dibujarJugador(float x, float y, float angulo, String objeto) {
-        Animation<TextureRegion> animacion = gestorAnimacion.getAnimacionPorObjeto(objeto);
-        TextureRegion frame = animacion.getKeyFrame(0, true);
-
-        float width = 128;
-        float height = 128;
-        float originX = width / 2f;
-        float originY = height / 2f;
-
-        batch.draw(frame, x, y, originX, originY, width, height, 1f, 1f, angulo);
-    }
-
-    private void dibujarObjetosEstaciones() {
-        PaqueteEstado estado = cliente.getUltimoEstado();
-        if (estado == null) return;
-
-        for (DatosEstacion datosEst : estado.getEstaciones()) {
-            if (datosEst.objetosEnEstacion.isEmpty()) continue;
-
-            EstacionTrabajo estacion = gestorMapa.getEstaciones().get(datosEst.index);
-
-            float x = estacion.area.x + 10;
-            float y = estacion.area.y + estacion.area.height - 40;
-
-            // Dibujar cada objeto en la mesa
-            for (int i = 0; i < datosEst.objetosEnEstacion.size(); i++) {
-                String nombreObjeto = datosEst.objetosEnEstacion.get(i);
-
-                // Aquí deberías obtener la textura del objeto
-                // Por ahora, dibujamos un placeholder
-                batch.setColor(0.5f, 0.5f, 1f, 1f);
-                batch.draw(Recursos.PIXEL, x + (i * 35), y, 30, 30);
-                batch.setColor(1f, 1f, 1f, 1f);
-            }
-        }
-    }
-
-    private void dibujarIndicadoresProcesadoras() {
-        PaqueteEstado estado = cliente.getUltimoEstado();
-        if (estado == null) return;
-
-        for (DatosEstacion datosEst : estado.getEstaciones()) {
-            if (!datosEst.procesando && datosEst.estadoIndicador.equals("INACTIVO")) {
-                continue;
-            }
-
-            EstacionTrabajo estacion = gestorMapa.getEstaciones().get(datosEst.index);
-
-            float x = estacion.area.x + estacion.area.width / 2 - 20;
-            float y = estacion.area.y + estacion.area.height + 10;
-
-            // Color según el estado
-            Color color = Color.WHITE;
-            switch (datosEst.estadoIndicador) {
-                case "PROCESANDO":
-                    color = Color.YELLOW;
-                    break;
-                case "LISTO":
-                    color = Color.GREEN;
-                    break;
-                case "QUEMANDOSE":
-                    color = Color.RED;
-                    break;
-            }
-
-            // Fondo de la barra
-            batch.setColor(Color.DARK_GRAY);
-            batch.draw(Recursos.PIXEL, x, y, 40, 8);
-
-            // Barra de progreso (siempre llena si está procesando o lista)
-            batch.setColor(color);
-            float anchoProgreso = 40f * datosEst.progresoProceso;
-            batch.draw(Recursos.PIXEL, x, y, anchoProgreso, 8);
-
-            batch.setColor(1f, 1f, 1f, 1f); // Restaurar color
-        }
-    }
-
-    private void dibujarProgresoBebidasPreparando() {
-        PaqueteEstado estado = cliente.getUltimoEstado();
-        if (estado == null) return;
-
-        for (DatosEstacion datosEst : estado.getEstaciones()) {
-            if (!datosEst.estadoMenuBebida.equals("PREPARANDO")) {
-                continue;
-            }
-
-            EstacionTrabajo estacion = gestorMapa.getEstaciones().get(datosEst.index);
-
-            float x = estacion.area.x + estacion.area.width / 2 - 25;
-            float y = estacion.area.y + estacion.area.height + 20;
-
-            // Fondo de la barra
-            batch.setColor(Color.DARK_GRAY);
-            batch.draw(Recursos.PIXEL, x, y, 50, 10);
-
-            // Barra de progreso
-            batch.setColor(Color.CYAN);
-            float anchoProgreso = 50f * datosEst.progresoPreparacion;
-            batch.draw(Recursos.PIXEL, x, y, anchoProgreso, 10);
-
-            batch.setColor(1f, 1f, 1f, 1f);
-        }
-    }
-
     private void renderizarUI() {
         gestorViewport.getViewportUI().apply();
         gestorViewport.actualizarCamaraUI();
 
+        PaqueteEstado estado = cliente.getUltimoEstado();
+        if (estado != null) {
+            gestorUI.actualizarTiempo(estado.getTiempoRestante());
+            gestorUI.actualizarPuntaje(estado.getPuntaje());
+
+            DatosJugador datosJ1 = estado.getJugador1();
+            DatosJugador datosJ2 = estado.getJugador2();
+
+            String itemJ1 = datosJ1 != null ? datosJ1.objetoEnMano : "Vacío";
+            String itemJ2 = datosJ2 != null ? datosJ2.objetoEnMano : "Vacío";
+
+            gestorUI.actualizarInventario(itemJ1, itemJ2);
+
+            // Actualizar lista de clientes activos SOLO si hay clientes TODO comento el bloque porque no funciona correctamente el método crearClientesVisualesDesdeEstado
+//            if (!estado.getClientes().isEmpty()) {
+//                ArrayList<Cliente> clientesVisuales = crearClientesVisualesDesdeEstado(estado);
+//                if (!clientesVisuales.isEmpty()) {
+//                    gestorUI.actualizarPedidosActivos(clientesVisuales);
+//                }
+//            }
+        }
+
         batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
         batch.begin();
 
-        gestorUI.actualizarInventario(objetoJ1, objetoJ2);
         gestorUI.dibujar(batch);
 
-        // Dibujar pedidos de clientes
-        PaqueteEstado estado = cliente.getUltimoEstado();
-        if (estado != null && !estado.getClientes().isEmpty()) {
-            // Convertir DatosCliente a lista temporal para dibujar
-            // (esto es una simplificación, idealmente tendríamos objetos Cliente reales)
-            float anchoUI = gestorViewport.getViewportUI().getWorldWidth();
-            float altoUI = gestorViewport.getViewportUI().getWorldHeight();
+        // Dibujar pedidos SOLO si hay estado y clientes todo el debug no va a funcionar porque el método crearClientesVisualesDesdeEstado funciona mal
+//        if (estado != null && !estado.getClientes().isEmpty()) {
+//            System.out.println("=== DEBUG CLIENTES ===");
+//            System.out.println("Cantidad de clientes del servidor: " + estado.getClientes().size());
+//
+//            ArrayList<Cliente> clientesVisuales = crearClientesVisualesDesdeEstado(estado);
+//            System.out.println("Cantidad de clientes visuales creados: " + clientesVisuales.size());
+//
+//            for (Cliente c : clientesVisuales) {
+//                System.out.println("Cliente - Estado: " + c.getPedido().getEstadoPedido() +
+//                    ", Productos: " + c.getPedido().getProductosSolicitados().size() +
+//                    ", Tiempo restante: " + c.getTiempoRestante());
+//            }
+//
+//            if (!clientesVisuales.isEmpty()) {
+//                gestorUI.dibujarPedidos(batch, clientesVisuales,
+//                    gestorViewport.getViewportUI().getWorldWidth(),
+//                    gestorViewport.getViewportUI().getWorldHeight());
+//            }
+//        }
 
-            dibujarTarjetasPedidos(batch, estado.getClientes(), anchoUI, altoUI);
+        // Dibujar menús de estaciones si el jugador está en uno
+        if (estado != null) {
+            DatosJugador datosLocal = (miIdJugador == 1) ? estado.getJugador1() : estado.getJugador2();
+            if (datosLocal != null && datosLocal.estaEnMenu && estacionCercanaIndex >= 0) {
+                visualizadorMenu.dibujar(batch,
+                    gestorViewport.getViewportUI().getWorldWidth(),
+                    gestorViewport.getViewportUI().getWorldHeight());
+            }
         }
-
-        // Dibujar menú de estación si está visible
-        visualizadorMenu.dibujar(batch,
-            gestorViewport.getViewportUI().getWorldWidth(),
-            gestorViewport.getViewportUI().getWorldHeight());
 
         batch.end();
     }
 
-    private void dibujarTarjetasPedidos(SpriteBatch batch, ArrayList<DatosCliente> clientes, float anchoUI, float altoUI) {
-        float yInicial = altoUI / 2f;
-        float x = anchoUI - 220f;
-        int maxVisibles = Math.min(clientes.size(), 5);
-
-        for (int i = 0; i < maxVisibles; i++) {
-            DatosCliente datosCliente = clientes.get(i);
-            float y = yInicial - (i * 120f);
-
-            dibujarTarjetaPedido(batch, datosCliente, x, y);
-        }
+    private void renderizarOverlays(float delta) {
+        batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
+        gestorOverlays.renderOverlays(delta, batch);
     }
 
-    private void dibujarTarjetaPedido(SpriteBatch batch, DatosCliente datosCliente, float x, float y) {
-        final float ANCHO_TARJETA = 200f;
-        final float ALTO_TARJETA = 100f;
+    public void togglePausa() {
+        gestorOverlays.togglePausa();
+    }
 
-        // Fondo de la tarjeta (usando ShapeRenderer o un pixel)
-        batch.setColor(0.2f, 0.2f, 0.2f, 0.8f);
-        batch.draw(Recursos.PIXEL, x, y, ANCHO_TARJETA, ALTO_TARJETA);
+    public void reanudarJuego() {
+        gestorOverlays.reanudarJuego();
+    }
 
-        // Barra de tolerancia
-        Color colorBarra = datosCliente.porcentajeTolerancia > 0.6f ? Color.GREEN :
-            datosCliente.porcentajeTolerancia > 0.3f ? Color.YELLOW : Color.RED;
-        batch.setColor(colorBarra);
-        batch.draw(Recursos.PIXEL, x, y, ANCHO_TARJETA * datosCliente.porcentajeTolerancia, 5f);
+    private ArrayList<Cliente> crearClientesVisualesDesdeEstado(PaqueteEstado estado) {
+        ArrayList<Cliente> clientesVisuales = new ArrayList<>();
 
-        batch.setColor(1f, 1f, 1f, 1f);
-
-        // Textura del cliente
-        TextureRegion texturaCliente = GestorTexturas.getInstance().getTexturaCliente();
-        if (texturaCliente != null) {
-            batch.draw(texturaCliente, x + 10, y + ALTO_TARJETA - 74, 64, 64);
-        }
-
-        // Cara según tolerancia
-        TextureRegion cara = GestorTexturas.getInstance().getCaraPorTolerancia(datosCliente.porcentajeTolerancia);
-        if (cara != null) {
-            batch.draw(cara, x + 10 + 32 - 12, y + ALTO_TARJETA - 10 - 12, 24, 24);
-        }
-
-        // Productos solicitados (máximo 3)
-        int cantidadAMostrar = Math.min(datosCliente.productosPedido.size(), 3);
-        for (int i = 0; i < cantidadAMostrar; i++) {
-            String nombreProducto = datosCliente.productosPedido.get(i);
-            String claveTextura = nombreProducto.toLowerCase().replace(" ", "");
-
-            TextureRegion texturaProducto = GestorTexturas.getInstance().getTexturaProducto(claveTextura);
-            if (texturaProducto != null) {
-                float offset = i * 16f;
-                float tam = 64f * 0.8f;
-                batch.draw(texturaProducto,
-                    x + ANCHO_TARJETA - tam - 10 - offset,
-                    y + ALTO_TARJETA - tam - 10 - offset,
-                    tam, tam);
+        for (DatosCliente dc : estado.getClientes()) {
+            // Solo procesar clientes en preparación (los que deben mostrar tarjeta)
+            if (!dc.estadoPedido.equals("EN_PREPARACION")) {
+                continue;
             }
+
+            // Recuperar los productos visuales reales desde el GestorProductos
+            ArrayList<Producto> productos = new ArrayList<>();
+            for (String nombreProducto : dc.productosPedido) {
+                Producto p = gestorProductos.obtenerProductoPorNombre(nombreProducto);
+                if (p != null) {
+                    productos.add(p);
+                } else {
+                    Gdx.app.error("ClientesVisuales", "No se encontró producto: " + nombreProducto);
+                }
+            }
+
+
+            // Usar el tiempo restante del servidor directamente
+            Cliente clienteVisual = new Cliente(productos, dc.tiempoRestante + 1f, // +1 para evitar que expire inmediatamente
+                dc.esVirtual ? TipoCliente.VIRTUAL : TipoCliente.PRESENCIAL);
+            clienteVisual.inicializarVisualizador();
+
+            // Asignar estación si es válida
+            if (dc.indexEstacion >= 0 && dc.indexEstacion < estaciones.size()) {
+                clienteVisual.setEstacionAsignada(estaciones.get(dc.indexEstacion));
+            }
+
+            // Forzar el estado del pedido a EN_PREPARACION
+            clienteVisual.getPedido().setEstadoPedido(EstadoPedido.EN_PREPARACION);
+
+            clientesVisuales.add(clienteVisual);
         }
 
-        // Tiempo restante
-        int segundos = (int) datosCliente.tiempoRestante;
-        Texto textoTiempo = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
-        textoTiempo.setTexto(segundos + "s");
-        textoTiempo.setPosition(
-            x + (ANCHO_TARJETA / 2f) - (textoTiempo.getAncho() / 2f),
-            y + (ALTO_TARJETA / 2f) + (textoTiempo.getAlto() / 2f)
-        );
-        textoTiempo.dibujarEnUi(batch);
+        return clientesVisuales;
     }
 
     private void verificarFinJuego() {
         PaqueteEstado estado = cliente.getUltimoEstado();
         if (estado != null && estado.isJuegoTerminado()) {
-            cliente.desconectar();
-            Pantalla.cambiarPantalla(new PantallaFinal(
-                "Tiempo agotado",
-                estado.getPuntaje(),
-                false,
-                estado.getRazonFin()
-            ));
+            terminarJuego(estado.getPuntaje(), estado.getRazonFin());
         }
+    }
+
+    private void terminarJuego(int puntaje, String razon) {
+        juegoFinalizado = true;
+        gestorAudio.detenerMusica();
+
+        cliente.desconectar();
+
+        boolean esDespido = razon != null && !razon.isEmpty();
+        if (esDespido) {
+            gestorAudio.reproducirSonido(SonidoJuego.DESPIDO);
+        } else {
+            gestorAudio.reproducirSonido(SonidoJuego.NIVEL_COMPLETADO);
+        }
+
+        Pantalla.cambiarPantalla(new PantallaFinal(
+            gestorTiempo.getTiempoFormateado(),
+            puntaje,
+            esDespido,
+            razon != null ? razon : ""
+        ));
     }
 
     private void finalizarPorDesconexion() {
@@ -604,10 +768,18 @@ public class PantallaJuegoOnline extends Pantalla {
     }
 
     @Override
-    public void pause() {}
+    public void pause() {
+        if (gestorAudio != null) {
+            gestorAudio.pausarMusica();
+        }
+    }
 
     @Override
-    public void resume() {}
+    public void resume() {
+        if (gestorAudio != null && !gestorOverlays.isJuegoEnPausa()) {
+            gestorAudio.reanudarMusica();
+        }
+    }
 
     @Override
     public void hide() {}
@@ -619,11 +791,23 @@ public class PantallaJuegoOnline extends Pantalla {
         if (cliente != null && cliente.isConectado()) {
             cliente.desconectar();
         }
+
+        if (gestorOverlays != null) {
+            gestorOverlays.dispose();
+        }
+
         if (gestorUI != null) {
             gestorUI.dispose();
         }
+
+        if (gestorAudio != null) {
+            gestorAudio.dispose();
+        }
+
         if (gestorMapa != null) {
             gestorMapa.dispose();
         }
+
+        GestorEventosAleatorios.getInstancia().reset();
     }
 }
