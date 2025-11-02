@@ -18,6 +18,10 @@ public class ClienteRed {
     private boolean servidorCerrado;
     private String razonDesconexion;
     private boolean jugadorDesconectado;
+    private PaqueteCambioNivel paqueteCambioNivel;
+
+    // Campo para almacenar la configuración
+    private PaqueteInicioPartida configuracionPartida;
 
     public ClienteRed() {
         executor = Executors.newSingleThreadExecutor();
@@ -25,6 +29,7 @@ public class ClienteRed {
         servidorCerrado = false;
         razonDesconexion = "";
         jugadorDesconectado = false;
+        paqueteCambioNivel = null;
     }
 
     public boolean conectar(String ipServidor) {
@@ -81,6 +86,12 @@ public class ClienteRed {
                     PaqueteDesconexion desc = (PaqueteDesconexion) recibido;
                     manejarDesconexionRecibida(desc);
                     break;
+                } else if (recibido instanceof PaqueteInicioPartida) { // 👈 NUEVO
+                    configuracionPartida = (PaqueteInicioPartida) recibido;
+                    System.out.println("📦 Configuración de partida recibida:");
+                } else if (recibido instanceof PaqueteCambioNivel) {
+                    paqueteCambioNivel = (PaqueteCambioNivel) recibido;
+                    System.out.println("paquete cambio nivel recibido");
                 }
 
             } catch (SocketTimeoutException e) {
@@ -189,6 +200,18 @@ public class ClienteRed {
             executor.shutdown();
             socket.close();
         }
+    }
+
+    public PaqueteInicioPartida getConfiguracionPartida() {
+        return this.configuracionPartida;
+    }
+
+    public PaqueteCambioNivel getPaqueteCambioNivel() {
+        return this.paqueteCambioNivel;
+    }
+
+    public void limpiarPaqueteCambioNivel() {
+        this.paqueteCambioNivel = null;
     }
 
     public String getRazonDesconexion() {

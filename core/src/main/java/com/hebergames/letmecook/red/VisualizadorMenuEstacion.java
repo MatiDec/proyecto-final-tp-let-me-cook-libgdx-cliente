@@ -12,15 +12,41 @@ import com.hebergames.letmecook.utiles.Recursos;
 import java.util.ArrayList;
 
 public class VisualizadorMenuEstacion {
-    private ArrayList<Texto> textosMenu;
+    private final ArrayList<Texto> textosMenu = new ArrayList<>();
+    private final ArrayList<Texto> poolTextos = new ArrayList<>(); // pool reutilizable
     private Texto textoTitulo;
     private boolean visible;
     private boolean esJugador1;
     private String tipoEstacion;
 
+    private static final int TAMANIO_POOL_INICIAL = 15;
+
     public VisualizadorMenuEstacion() {
-        textosMenu = new ArrayList<>();
+        // Crear un pequeño pool inicial de textos
+        for (int i = 0; i < TAMANIO_POOL_INICIAL; i++) {
+            poolTextos.add(new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true));
+        }
         visible = false;
+    }
+
+    /** Obtiene un Texto disponible del pool (reutiliza o crea si no hay) */
+    private Texto obtenerTextoLibre() {
+        if (!poolTextos.isEmpty()) {
+            return poolTextos.remove(poolTextos.size() - 1);
+        }
+        // Si se necesitan más, se crean solo cuando sea necesario
+        return new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
+    }
+
+    /** Devuelve un texto al pool */
+    private void liberarTexto(Texto texto) {
+        texto.setTexto("");
+        poolTextos.add(texto);
+    }
+
+    private void limpiarTextos() {
+        for (Texto t : textosMenu) liberarTexto(t);
+        textosMenu.clear();
     }
 
     public void mostrarMenuHeladera(boolean esJugador1) {
@@ -28,15 +54,17 @@ public class VisualizadorMenuEstacion {
         this.visible = true;
         this.tipoEstacion = "Heladera";
 
-        textosMenu.clear();
+        limpiarTextos();
+        textoTitulo = obtenerTextoLibre();
+        textoTitulo.setTexto("Heladera");
 
         int numero = 1;
         for (TipoIngrediente tipo : TipoIngrediente.values()) {
-            Texto texto = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);
+            if (numero > 9) break;
+            Texto texto = obtenerTextoLibre();
             texto.setTexto(numero + ". " + tipo.getNombre());
             textosMenu.add(texto);
             numero++;
-            if (numero > 9) break;
         }
     }
 
@@ -45,66 +73,46 @@ public class VisualizadorMenuEstacion {
         this.visible = true;
         this.tipoEstacion = "Mesa";
 
-        textosMenu.clear();
+        limpiarTextos();
+        textoTitulo = obtenerTextoLibre();
+        textoTitulo.setTexto("Mesa");
 
-        // Opción 1 y 2: Slots
         for (int i = 0; i < 2; i++) {
-            Texto texto = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);
-            String contenido = (i < objetosEnMesa.size()) ? objetosEnMesa.get(i) : "Vacío";
-            texto.setTexto((i + 1) + ". Slot " + (i + 1) + " [" + contenido + "]");
-            textosMenu.add(texto);
+            Texto t = obtenerTextoLibre();
+            String contenido = i < objetosEnMesa.size() ? objetosEnMesa.get(i) : "Vacío";
+            t.setTexto((i + 1) + ". Slot " + (i + 1) + " [" + contenido + "]");
+            textosMenu.add(t);
         }
 
-        // Opción 3: Crear producto
-        Texto textoCrear = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);
-        textoCrear.setTexto("3. Crear Producto");
-        textosMenu.add(textoCrear);
+        Texto crear = obtenerTextoLibre();
+        crear.setTexto("3. Crear Producto");
+        textosMenu.add(crear);
 
-        // Opción 4: Retirar producto
-        Texto textoRetirar = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);
-        textoRetirar.setTexto("4. Retirar Producto");
-        textosMenu.add(textoRetirar);
+        Texto retirar = obtenerTextoLibre();
+        retirar.setTexto("4. Retirar Producto");
+        textosMenu.add(retirar);
     }
 
     public void mostrarMenuCafetera(boolean esJugador1, String estadoActual, float progreso) {
         this.esJugador1 = esJugador1;
         this.visible = true;
         this.tipoEstacion = "Cafetera";
+        limpiarTextos();
 
-        textosMenu.clear();
-
+        textoTitulo = obtenerTextoLibre();
         switch (estadoActual) {
             case "SELECCION_TAMANO":
-                textoTitulo = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
                 textoTitulo.setTexto("Selecciona tamaño:");
-
-                String[] tamanos = {"Pequeño", "Mediano", "Grande"};
-                for (int i = 0; i < tamanos.length; i++) {
-                    Texto texto = new Texto(Recursos.FUENTE_MENU, 16, Color.YELLOW, true);
-                    texto.setTexto((i + 1) + ". " + tamanos[i]);
-                    textosMenu.add(texto);
-                }
+                agregarOpciones(Cafe.getTiposCafe().keySet().toArray(new String[0]));
                 break;
-
             case "SELECCION_TIPO":
-                textoTitulo = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
                 textoTitulo.setTexto("Selecciona tipo de café:");
-
-                String[] tipos = Cafe.getTiposCafe().keySet().toArray(new String[0]);
-                for (int i = 0; i < tipos.length; i++) {
-                    Texto texto = new Texto(Recursos.FUENTE_MENU, 16, Color.YELLOW, true);
-                    texto.setTexto((i + 1) + ". " + tipos[i]);
-                    textosMenu.add(texto);
-                }
+                agregarOpciones(Cafe.getTiposCafe().keySet().toArray(new String[0]));
                 break;
-
             case "PREPARANDO":
-                textoTitulo = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
                 textoTitulo.setTexto(String.format("Preparando... %.0f%%", progreso * 100f));
                 break;
-
             case "LISTO":
-                textoTitulo = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
                 textoTitulo.setTexto("¡Café listo! Presiona E");
                 break;
         }
@@ -114,41 +122,22 @@ public class VisualizadorMenuEstacion {
         this.esJugador1 = esJugador1;
         this.visible = true;
         this.tipoEstacion = "Fuente";
+        limpiarTextos();
 
-        textosMenu.clear();
-
+        textoTitulo = obtenerTextoLibre();
         switch (estadoActual) {
             case "SELECCION_TAMANO":
-                textoTitulo = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
                 textoTitulo.setTexto("Selecciona tamaño:");
-
-                String[] tamanos = {"Pequeño", "Mediano", "Grande"};
-                for (int i = 0; i < tamanos.length; i++) {
-                    Texto texto = new Texto(Recursos.FUENTE_MENU, 16, Color.YELLOW, true);
-                    texto.setTexto((i + 1) + ". " + tamanos[i]);
-                    textosMenu.add(texto);
-                }
+                agregarOpciones(new String[]{"Pequeño", "Mediano", "Grande"});
                 break;
-
             case "SELECCION_TIPO":
-                textoTitulo = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
                 textoTitulo.setTexto("Selecciona bebida:");
-
-                String[] tipos = Gaseosa.getTiposGaseosa().keySet().toArray(new String[0]);
-                for (int i = 0; i < tipos.length; i++) {
-                    Texto texto = new Texto(Recursos.FUENTE_MENU, 16, Color.YELLOW, true);
-                    texto.setTexto((i + 1) + ". " + tipos[i]);
-                    textosMenu.add(texto);
-                }
+                agregarOpciones(Gaseosa.getTiposGaseosa().keySet().toArray(new String[0]));
                 break;
-
             case "PREPARANDO":
-                textoTitulo = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
                 textoTitulo.setTexto(String.format("Sirviendo... %.0f%%", progreso * 100f));
                 break;
-
             case "LISTO":
-                textoTitulo = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
                 textoTitulo.setTexto("¡Bebida lista! Presiona E");
                 break;
         }
@@ -158,10 +147,12 @@ public class VisualizadorMenuEstacion {
         this.esJugador1 = esJugador1;
         this.visible = true;
         this.tipoEstacion = "MaquinaEnvasadora";
+        limpiarTextos();
 
-        textosMenu.clear();
+        textoTitulo = obtenerTextoLibre();
+        textoTitulo.setTexto("Envasadora");
 
-        Texto texto = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);
+        Texto texto = obtenerTextoLibre();
         String textoOpcion = "1. Envasar Ingrediente";
 
         if (nombreIngrediente != null && !nombreIngrediente.equals("vacio")) {
@@ -179,34 +170,43 @@ public class VisualizadorMenuEstacion {
         textosMenu.add(texto);
     }
 
+    private void agregarOpciones(String[] opciones) {
+        for (int i = 0; i < opciones.length; i++) {
+            Texto t = obtenerTextoLibre();
+            t.setTexto((i + 1) + ". " + opciones[i]);
+            textosMenu.add(t);
+        }
+    }
+
     public void ocultar() {
         visible = false;
-        textosMenu.clear();
-        textoTitulo = null;
+        if (textoTitulo != null) {
+            liberarTexto(textoTitulo);
+            textoTitulo = null;
+        }
+        limpiarTextos();
     }
 
     public void dibujar(SpriteBatch batch, float anchoUI, float altoUI) {
         if (!visible) return;
 
+        float margen = 50f;
         float anchoMenu = 400f;
-        float MARGEN = 50f;
-        float x = esJugador1 ? MARGEN : anchoUI - anchoMenu - MARGEN;
+        float x = esJugador1 ? margen : anchoUI - anchoMenu - margen;
 
-        // Dibujar título si existe
         if (textoTitulo != null) {
             textoTitulo.setPosition(x, altoUI / 2f + 100);
             textoTitulo.dibujarEnUi(batch);
         }
 
-        // Dibujar opciones
-        float ESPACIADO = 40f;
-        float alturaTotal = textosMenu.size() * ESPACIADO;
+        float espaciado = 40f;
+        float alturaTotal = textosMenu.size() * espaciado;
         float y = (altoUI / 2f) + (alturaTotal / 2f);
 
-        for (Texto texto : textosMenu) {
-            texto.setPosition(x, y);
-            texto.dibujarEnUi(batch);
-            y -= ESPACIADO;
+        for (Texto t : textosMenu) {
+            t.setPosition(x, y);
+            t.dibujarEnUi(batch);
+            y -= espaciado;
         }
     }
 

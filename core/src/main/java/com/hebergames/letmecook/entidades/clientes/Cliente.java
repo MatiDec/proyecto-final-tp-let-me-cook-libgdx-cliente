@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
+import com.hebergames.letmecook.mapa.GestorMapa;
 import com.hebergames.letmecook.pedidos.EstadoPedido;
 import com.hebergames.letmecook.pedidos.Pedido;
 import com.hebergames.letmecook.utiles.GestorTexturas;
@@ -121,6 +122,24 @@ public class Cliente {
     public void actualizarDesdeServidor(float porcentajeTolerancia, float tiempoRestante) {
         // Calcular tiempo transcurrido basado en porcentaje
         this.tiempoEspera = TIEMPO_MAXIMO_ESPERA * (1f - porcentajeTolerancia);
+    }
+
+    public TipoCliente getTipo() {
+        return this.TIPO_CLIENTE;
+    }
+
+    public void setPorcentajeTolerancia(float porcentajeTolerancia) {
+        porcentajeTolerancia = Math.max(0f, Math.min(1f, porcentajeTolerancia));
+
+        if (PEDIDO.getEstadoPedido() == EstadoPedido.EN_ESPERA) {
+            this.tiempoEsperaEnCaja = TIEMPO_MAX_ESPERA_CAJA * (1f - porcentajeTolerancia);
+        } else if (PEDIDO.getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
+            this.tiempoEspera = TIEMPO_MAXIMO_ESPERA * (1f - porcentajeTolerancia);
+        }
+    }
+
+    public void setVisualizador(VisualizadorCliente visualizador) {
+        this.visualizador = visualizador;
     }
 
 }

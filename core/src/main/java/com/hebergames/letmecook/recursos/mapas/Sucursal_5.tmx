@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="24" tilewidth="128" tileheight="128" infinite="0" nextlayerid="5" nextobjectid="36">
+ <tileset firstgid="1" source="Nivel_1.tsx"/>
+ <layer id="1" name="Capa de patrones 1" width="32" height="24">
+  <data encoding="csv">
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,12,12,12,12,12,9,9,28,25,10,10,12,12,12,12,12,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,12,16,19,26,26,26,26,26,26,26,26,26,26,20,15,12,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,12,1610612741,26,26,26,26,26,26,26,26,26,26,26,26,2684354565,12,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,12,2684354568,26,26,12,29,26,26,26,26,29,12,26,26,7,12,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,12,2684354568,26,26,12,14,4,4,1610612739,1610612739,13,12,26,26,7,12,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,12,17,26,26,12,12,12,12,12,12,12,12,26,26,21,12,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,12,14,1,1,12,27,27,27,27,27,27,12,2684354562,2684354562,13,12,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,12,12,12,12,12,27,27,27,27,27,27,12,12,12,12,12,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
+27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27
+</data>
+ </layer>
+ <objectgroup id="2" name="Interactuables">
+  <object id="1" name="CajaRegistradora" type="Interactuable" x="1664" y="1024" width="128" height="128"/>
+  <object id="2" name="CajaRegistradora" type="Interactuable" x="1792" y="1024" width="128" height="128"/>
+  <object id="3" name="CajaVirtual" type="Interactuable" x="1920" y="1024" width="128" height="128"/>
+  <object id="4" name="MesaRetiro" type="Interactuable" x="2176" y="1024" width="128" height="128"/>
+  <object id="5" name="MesaRetiro" type="Interactuable" x="2304" y="1024" width="128" height="128"/>
+  <object id="6" name="Heladera" type="Interactuable" x="1152" y="1280" width="128" height="128"/>
+  <object id="7" name="Tostadora" type="Interactuable" x="1152" y="1408" width="128" height="128"/>
+  <object id="8" name="Tostadora" type="Interactuable" x="1152" y="1536" width="128" height="128"/>
+  <object id="9" name="Cafetera" type="Interactuable" x="1280" y="1792" width="128" height="128"/>
+  <object id="10" name="Cafetera" type="Interactuable" x="1408" y="1792" width="128" height="128"/>
+  <object id="11" name="Horno" type="Interactuable" x="2816" y="1408" width="128" height="128"/>
+  <object id="12" name="Horno" type="Interactuable" x="2816" y="1536" width="128" height="128"/>
+  <object id="13" name="Freidora" type="Interactuable" x="2560" y="1792" width="128" height="128"/>
+  <object id="14" name="Freidora" type="Interactuable" x="2688" y="1792" width="128" height="128"/>
+  <object id="15" name="Basurero" type="Interactuable" x="1664" y="1408" width="128" height="128"/>
+  <object id="16" name="Basurero" type="Interactuable" x="2304" y="1408" width="128" height="128"/>
+  <object id="18" name="AreaEnsamblaje" type="Interactuable" x="1792" y="1536" width="128" height="128"/>
+  <object id="19" name="AreaEnsamblaje" type="Interactuable" x="1920" y="1536" width="128" height="128"/>
+  <object id="20" name="MaquinaEnvasadora" type="Interactuable" x="2048" y="1536" width="128" height="128"/>
+  <object id="21" name="MaquinaEnvasadora" x="2176" y="1536" width="128" height="128"/>
+  <object id="22" name="Horno" type="Interactuable" x="2816" y="1280" width="128" height="128"/>
+ </objectgroup>
+ <objectgroup id="3" name="Colisionables">
+  <object id="23" type="Colisionable" x="1024" y="1024" width="384" height="256"/>
+  <object id="24" type="Colisionable" x="1024" y="1280" width="256" height="512"/>
+  <object id="25" type="Colisionable" x="1024" y="1792" width="640" height="256"/>
+  <object id="26" type="Colisionable" x="1536" y="1408" width="256" height="384"/>
+  <object id="27" type="Colisionable" x="1792" y="1536" width="512" height="256"/>
+  <object id="28" type="Colisionable" x="2304" y="1408" width="256" height="384"/>
+  <object id="29" type="Colisionable" x="2432" y="1792" width="640" height="256"/>
+  <object id="30" type="Colisionable" x="2816" y="1280" width="256" height="512"/>
+  <object id="31" type="Colisionable" x="2688" y="1024" width="384" height="256"/>
+  <object id="32" type="Colisionable" x="1408" y="1024" width="1280" height="128"/>
+ </objectgroup>
+ <objectgroup id="4" name="Jugadores">
+  <object id="34" name="Jugador_1" type="Jugador" x="1792" y="1280" width="128" height="128"/>
+  <object id="35" name="Jugador_2" type="Jugador" x="2176" y="1280" width="128" height="128"/>
+ </objectgroup>
+</map>

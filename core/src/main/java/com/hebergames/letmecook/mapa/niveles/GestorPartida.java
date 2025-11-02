@@ -42,9 +42,41 @@ public class GestorPartida {
 
             CancionNivel cancionNivel = cancionesDisponibles[i % cancionesDisponibles.length];
 
-            Mapa mapaGenerado = new Mapa(rutaMapaElegida, "Sucursal " + (i + 1));
+            Mapa mapaGenerado = new Mapa(rutaMapaElegida, "Sucursal_" + (i + 1));
             NIVELES_PARTIDA.add(new NivelPartida(mapaGenerado, turnoAleatorio, cancionNivel));
         }
+    }
+
+    public void generarNuevaPartida(ArrayList<String> niveles, int cantidadNiveles, boolean esServidor) {
+        NIVELES_PARTIDA.clear();
+        nivelActual = 0;
+        puntajeTotalPartida = 0;
+
+        if (esServidor) {
+            for (int i = 0; i < cantidadNiveles; i++) {
+                String[] partes = niveles.get(i).split(";");
+                Mapa mapaGenerado = new Mapa(partes[0], "Sucursal_" + (i+1));
+
+                TurnoTrabajo turno = buscarTurno(partes[1]);
+
+                NIVELES_PARTIDA.add(new NivelPartida(mapaGenerado, turno, CancionNivel.getPorTurno(turno)));
+            }
+        }
+
+    }
+
+    private TurnoTrabajo buscarTurno(String turno) {
+
+        int j = 0;
+
+        while (j < TurnoTrabajo.values().length) {
+            if(turno.equals(TurnoTrabajo.values()[j].toString())) {
+                return TurnoTrabajo.values()[j];
+            }
+            j ++;
+        }
+
+        return TurnoTrabajo.MANANA;
     }
 
     public NivelPartida getNivelActual() {

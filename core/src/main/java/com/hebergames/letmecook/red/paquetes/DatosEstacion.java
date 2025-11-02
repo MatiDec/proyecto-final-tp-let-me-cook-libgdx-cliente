@@ -7,13 +7,15 @@ public class DatosEstacion implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public int index;
-    public String tipoEstacion; // "Horno", "Heladera", "Mesa", etc.
+    public String tipoEstacion;
 
     // Para procesadoras
     public boolean procesando;
     public String nombreIngrediente;
-    public String estadoIndicador;
+    public String estadoIndicador; // "PROCESANDO", "LISTO", "QUEMANDOSE", "INACTIVO"
     public float progresoProceso; // 0.0 a 1.0
+    public boolean fueraDeServicio; // 👈 NUEVO - Para máquinas rotas
+    public String estadoMaquina; // 👈 NUEVO - "ACTIVA" o "LISTA"
 
     // Para mesas
     public ArrayList<String> objetosEnEstacion;
@@ -38,5 +40,7 @@ public class DatosEstacion implements Serializable {
         this.tamanoSeleccionado = "";
         this.progresoPreparacion = 0f;
         this.tieneJugador = false;
+        this.fueraDeServicio = false; // 👈 NUEVO
+        this.estadoMaquina = "INACTIVA"; // 👈 NUEVO
     }
 }

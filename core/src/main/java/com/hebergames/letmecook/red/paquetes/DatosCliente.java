@@ -1,5 +1,8 @@
 package com.hebergames.letmecook.red.paquetes;
 
+import com.hebergames.letmecook.mapa.niveles.TurnoTrabajo;
+import com.hebergames.letmecook.pedidos.EstadoPedido;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -22,5 +25,18 @@ public class DatosCliente implements Serializable {
         this.productosPedido = productosPedido;
         this.esVirtual = esVirtual;
         this.indexEstacion = indexEstacion;
+    }
+
+    public EstadoPedido getEstadoPedido() {
+        int j = 0;
+
+        while (j < EstadoPedido.values().length) {
+            if(this.estadoPedido.equals(EstadoPedido.values()[j].toString())) {
+                return EstadoPedido.values()[j];
+            }
+            j ++;
+        }
+
+        return EstadoPedido.EN_ESPERA;
     }
 }

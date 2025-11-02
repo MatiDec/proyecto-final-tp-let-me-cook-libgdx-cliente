@@ -116,15 +116,63 @@ public class GestorProductos {
     }
 
     public Producto obtenerProductoPorNombre(String nombreProducto) {
-        Producto p = new ProductoGenerico("a", null, CategoriaProducto.INVALIDO);
-         boolean encontrado = false;
-         int i = 0;
-         while (i < PRODUCTOS_DISPONIBLES.size() && !encontrado) {
-             if (p.getNombre().equalsIgnoreCase(nombreProducto)) {
-                 return p;
-             }
-             i++;
-         }
-         return null;
+        // Primero verificar si es una bebida (café o gaseosa)
+        if (nombreProducto.toLowerCase().contains("cafe") ||
+            nombreProducto.toLowerCase().contains("café")) {
+            return crearCafePorNombre(nombreProducto);
+        }
+
+        if (nombreProducto.toLowerCase().contains("coca") ||
+            nombreProducto.toLowerCase().contains("pepsi") ||
+            nombreProducto.toLowerCase().contains("sprite") ||
+            nombreProducto.toLowerCase().contains("soda") ||
+            nombreProducto.toLowerCase().contains("jugo")) {
+            return crearGaseosaPorNombre(nombreProducto);
+        }
+
+        // Si no es bebida, buscar en recetas
+        for (TipoReceta receta : RECETAS_DISPONIBLES) {
+            Producto producto = receta.crear().preparar();
+            if (producto.getNombre().equalsIgnoreCase(nombreProducto)) {
+                return producto;
+            }
+        }
+
+        // Si no se encuentra, crear un producto genérico
+        return new ProductoGenerico(nombreProducto, null, CategoriaProducto.INVALIDO);
     }
+
+    private Producto crearCafePorNombre(String nombre) {
+        // Extraer tipo y tamaño del nombre
+        // Ejemplo: "Expreso Pequeño" -> tipo="expreso", tamaño=PEQUENO
+        String nombreLower = nombre.toLowerCase();
+
+        TamanoBebida tamano = TamanoBebida.PEQUENO;
+        if (nombreLower.contains("mediano")) tamano = TamanoBebida.MEDIANO;
+        else if (nombreLower.contains("grande")) tamano = TamanoBebida.GRANDE;
+
+        String tipo = "expreso"; // por defecto
+        if (nombreLower.contains("americano")) tipo = "americano";
+        else if (nombreLower.contains("cortado")) tipo = "cortado";
+
+        return new Cafe(tipo, tamano);
+    }
+
+    private Producto crearGaseosaPorNombre(String nombre) {
+        String nombreLower = nombre.toLowerCase();
+
+        TamanoBebida tamano = TamanoBebida.PEQUENO;
+        if (nombreLower.contains("mediano")) tamano = TamanoBebida.MEDIANO;
+        else if (nombreLower.contains("grande")) tamano = TamanoBebida.GRANDE;
+
+        String tipo = "cocacola"; // por defecto
+        if (nombreLower.contains("pepsi")) tipo = "pepsi";
+        else if (nombreLower.contains("sprite")) tipo = "sprite";
+        else if (nombreLower.contains("soda")) tipo = "soda";
+        else if (nombreLower.contains("jugo")) tipo = "jugo";
+
+        return new Gaseosa(tipo, tamano);
+    }
+
+
 }

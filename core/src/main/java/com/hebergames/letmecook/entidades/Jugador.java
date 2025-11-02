@@ -374,4 +374,8 @@ public class Jugador {
     public void setInteractuables(ArrayList<Rectangle> rectangulosInteractuables) {
         this.interactuables = rectangulosInteractuables;
     }
+
+    public float getAnguloRotacion() {
+        return this.anguloRotacion;
+    }
 }

@@ -1,5 +1,5 @@
 #Configuraciones del juego
-#Sat Nov 01 22:21:37 ART 2025
+#Sun Nov 02 12:05:29 ART 2025
 resolucion=1280x720
 pantallaCompleta=false
 volumenMusica=30
