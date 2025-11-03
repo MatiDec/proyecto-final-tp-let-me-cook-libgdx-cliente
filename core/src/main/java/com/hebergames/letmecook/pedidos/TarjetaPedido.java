@@ -14,9 +14,8 @@ import com.hebergames.letmecook.utiles.Recursos;
 import java.util.ArrayList;
 
 public class TarjetaPedido {
-
-    private final Texto TEXTO_TIEMPO;
-    private final ShapeRenderer SHAPE_RENDERER;
+    private static Texto TEXTO_TIEMPO_COMPARTIDO;
+    private static ShapeRenderer SHAPE_RENDERER_COMPARTIDO;
 
     private final float ANCHO_TARJETA = 200f;
     private final float ALTO_TARJETA = 100f;
@@ -24,8 +23,13 @@ public class TarjetaPedido {
     private final float PADDING = 10f;
 
     public TarjetaPedido() {
-        SHAPE_RENDERER = new ShapeRenderer();
-        TEXTO_TIEMPO = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
+        if (SHAPE_RENDERER_COMPARTIDO == null) {
+            SHAPE_RENDERER_COMPARTIDO = new ShapeRenderer();
+        }
+
+        if (TEXTO_TIEMPO_COMPARTIDO == null) {
+            TEXTO_TIEMPO_COMPARTIDO = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
+        }
     }
 
     public void dibujar(SpriteBatch batch, Cliente cliente, float x, float y,
@@ -39,17 +43,17 @@ public class TarjetaPedido {
 
         batch.end();
 
-        SHAPE_RENDERER.setProjectionMatrix(batch.getProjectionMatrix());
-        SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Filled);
+        SHAPE_RENDERER_COMPARTIDO.setProjectionMatrix(batch.getProjectionMatrix());
+        SHAPE_RENDERER_COMPARTIDO.begin(ShapeRenderer.ShapeType.Filled);
 
-        SHAPE_RENDERER.setColor(0.2f, 0.2f, 0.2f, 0.8f);
-        SHAPE_RENDERER.rect(x, y, ANCHO_TARJETA, ALTO_TARJETA);
+        SHAPE_RENDERER_COMPARTIDO.setColor(0.2f, 0.2f, 0.2f, 0.8f);
+        SHAPE_RENDERER_COMPARTIDO.rect(x, y, ANCHO_TARJETA, ALTO_TARJETA);
 
         Color colorBarra = getColorPorcentaje(porcentajeTolerancia);
-        SHAPE_RENDERER.setColor(colorBarra);
-        SHAPE_RENDERER.rect(x, y, ANCHO_TARJETA * porcentajeTolerancia, 5f);
+        SHAPE_RENDERER_COMPARTIDO.setColor(colorBarra);
+        SHAPE_RENDERER_COMPARTIDO.rect(x, y, ANCHO_TARJETA * porcentajeTolerancia, 5f);
 
-        SHAPE_RENDERER.end();
+        SHAPE_RENDERER_COMPARTIDO.end();
 
         batch.begin();
 
@@ -84,12 +88,12 @@ public class TarjetaPedido {
         }
 
         int segundos = (int) cliente.getTiempoRestante();
-        TEXTO_TIEMPO.setTexto(segundos + "s");
-        TEXTO_TIEMPO.setPosition(
-            x + (ANCHO_TARJETA / 2f) - (TEXTO_TIEMPO.getAncho() / 2f),
-            y + (ALTO_TARJETA / 2f) + (TEXTO_TIEMPO.getAlto() / 2f)
+        TEXTO_TIEMPO_COMPARTIDO.setTexto(segundos + "s");
+        TEXTO_TIEMPO_COMPARTIDO.setPosition(
+            x + (ANCHO_TARJETA / 2f) - (TEXTO_TIEMPO_COMPARTIDO.getAncho() / 2f),
+            y + (ALTO_TARJETA / 2f) + (TEXTO_TIEMPO_COMPARTIDO.getAlto() / 2f)
         );
-        TEXTO_TIEMPO.dibujarEnUi(batch);
+        TEXTO_TIEMPO_COMPARTIDO.dibujarEnUi(batch);
     }
 
     private static String obtenerClaveTextura(ArrayList<Producto> productos, int i) {
@@ -117,7 +121,14 @@ public class TarjetaPedido {
         }
     }
 
+    public static void disposeStatic() {
+        if (SHAPE_RENDERER_COMPARTIDO != null) {
+            SHAPE_RENDERER_COMPARTIDO.dispose();
+            SHAPE_RENDERER_COMPARTIDO = null;
+        }
+        TEXTO_TIEMPO_COMPARTIDO = null;
+    }
+
     public void dispose() {
-        SHAPE_RENDERER.dispose();
     }
 }

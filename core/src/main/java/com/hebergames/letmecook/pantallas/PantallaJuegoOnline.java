@@ -951,26 +951,48 @@ public class PantallaJuegoOnline extends Pantalla {
             cliente.desconectar();
         }
 
+        // ✅ Liberar clientes visuales
         for (Cliente c : clientesVisualesMap.values()) {
             c.liberarRecursos();
         }
+        clientesVisualesMap.clear();
 
+        // ✅ Liberar animaciones
         if (gestorAnimacionJ1 != null) {
             gestorAnimacionJ1.dispose();
+            gestorAnimacionJ1 = null;
         }
 
+        if (gestorAnimacionJ2 != null) {
+            gestorAnimacionJ2.dispose();
+            gestorAnimacionJ2 = null;
+        }
+
+        // ✅ Liberar overlays
         if (gestorOverlays != null) {
             gestorOverlays.dispose();
+            gestorOverlays = null;
         }
 
+        // ✅ Liberar UI
         if (gestorUI != null) {
             gestorUI.dispose();
+            gestorUI = null;
         }
 
+        // ✅ Liberar mapa
         if (gestorMapa != null) {
             gestorMapa.dispose();
+            gestorMapa = null;
         }
 
         GestorEventosAleatorios.getInstancia().reset();
+    }
+
+    //esto de aca es porque me quedaba de fondo consumiendo ram cada vez que cerraba con la x el game aunque ahora no lo implemente
+    public void disposeFinal() {
+
+        GestorFuentes.getInstance().dispose();
+        GestorTexturas.getInstance().dispose();
     }
 }

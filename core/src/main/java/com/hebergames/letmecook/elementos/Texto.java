@@ -1,12 +1,11 @@
 package com.hebergames.letmecook.elementos;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.hebergames.letmecook.pantallas.juego.ObjetoVisualizable;
+import com.hebergames.letmecook.utiles.GestorFuentes;
 import com.hebergames.letmecook.utiles.Render;
 
 public class Texto implements ObjetoVisualizable {
@@ -17,29 +16,17 @@ public class Texto implements ObjetoVisualizable {
     private final GlyphLayout LAYOUT;
 
     public Texto(final String RUTA_FUENTE, final int DIMENSION, final Color COLOR, final boolean SOMBRA) {
-
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(RUTA_FUENTE));
-        FreeTypeFontGenerator.FreeTypeFontParameter parametro = new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        parametro.size = DIMENSION;
-        parametro.color = COLOR;
-        if(SOMBRA) {
-            parametro.shadowColor = Color.BLACK;
-            parametro.shadowOffsetX = 1;
-            parametro.shadowOffsetY = 1;
-        }
-
-        FUENTE = generator.generateFont(parametro);
-        generator.dispose();
+        FUENTE = GestorFuentes.getInstance().obtenerFuente(RUTA_FUENTE, DIMENSION, COLOR, SOMBRA);
         LAYOUT = new GlyphLayout();
     }
+
     public boolean fueClickeado(float x, float y){
         float ancho = getAncho();
         float alto = getAlto();
         float yInferior = this.y - alto;
 
         return x >= this.x && x<=this.x + ancho && y >= yInferior && y <= this.y;
-    };
+    }
 
     public void dibujar() {
         FUENTE.draw(Render.batch, this.texto, this.x, this.y);
@@ -56,7 +43,6 @@ public class Texto implements ObjetoVisualizable {
             this.LAYOUT.setText(FUENTE, nuevoTexto);
         }
     }
-
 
     public void setPosition(float x, float y) {
         this.x = x;
