@@ -85,7 +85,7 @@ public class PantallaJuegoOnline extends Pantalla {
 
     private GestorProductos gestorProductos;
 
-    private static final int TIEMPO_OBJETIVO = 200;
+    private static final int TIEMPO_OBJETIVO = 10;
 
     // Input local
     private DatosEntrada inputLocal;
@@ -489,23 +489,30 @@ public class PantallaJuegoOnline extends Pantalla {
 
             EstacionTrabajo estacion = estaciones.get(datosEst.index);
 
-            // 👇 Actualizar progreso de procesadoras
             if (estacion.getProcesadora() instanceof Procesadora) {
                 Procesadora proc = (Procesadora) estacion.getProcesadora();
-                actualizarEstadoProcesadora(proc, datosEst);
 
-                // 👇 Actualizar indicador visual
                 if (proc.getIndicador() != null) {
-                    EstadoIndicador estadoIndicador = EstadoIndicador.valueOf(datosEst.estadoIndicador);
+                    EstadoIndicador estadoIndicador;
+
+                    if (datosEst.estadoIndicador != null && !datosEst.estadoIndicador.isEmpty()) {
+                        try {
+                            estadoIndicador = EstadoIndicador.valueOf(datosEst.estadoIndicador);
+                        } catch (IllegalArgumentException e) {
+                            estadoIndicador = EstadoIndicador.INACTIVO;
+                        }
+                    } else {
+                        estadoIndicador = EstadoIndicador.INACTIVO;
+                    }
+
                     proc.getIndicador().setEstado(estadoIndicador);
-                    proc.getIndicador().setVisible(!datosEst.estadoIndicador.equals("INACTIVO"));
+                    proc.getIndicador().setVisible(!estadoIndicador.equals(EstadoIndicador.INACTIVO));
                 }
             }
 
             estacion.setFueraDeServicio(datosEst.fueraDeServicio);
         }
 
-        // Actualizar menú si el jugador está en uno
         if (!datosLocal.estaEnMenu) {
             if (visualizadorMenu.isVisible()) {
                 visualizadorMenu.ocultar();
@@ -533,7 +540,6 @@ public class PantallaJuegoOnline extends Pantalla {
                 break;
 
             case "Mesa":
-                // Actualizar menú con los objetos actuales
                 visualizadorMenu.mostrarMenuMesa(esJ1, datosEst.objetosEnEstacion);
                 break;
 
@@ -551,7 +557,6 @@ public class PantallaJuegoOnline extends Pantalla {
                 break;
 
             default:
-                // Si es otro tipo de estación con menú, ocultar
                 visualizadorMenu.ocultar();
                 break;
         }

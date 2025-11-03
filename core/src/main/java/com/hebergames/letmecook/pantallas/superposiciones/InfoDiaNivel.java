@@ -10,6 +10,7 @@ public class InfoDiaNivel {
 
     private final int NUMERO_DIA;
     private final NivelPartida NIVEL;
+    private final int puntajeReal;
     private float x, y;
 
     private Texto textoDia;
@@ -17,9 +18,10 @@ public class InfoDiaNivel {
     private Texto textoTurno;
     private Texto textoPuntos;
 
-    public InfoDiaNivel(final int NUMERO_DIA, final NivelPartida NIVEL) {
+    public InfoDiaNivel(final int NUMERO_DIA, final NivelPartida NIVEL, int puntajeReal) {
         this.NUMERO_DIA = NUMERO_DIA;
         this.NIVEL = NIVEL;
+        this.puntajeReal = puntajeReal;
         inicializarTextos();
     }
 
@@ -33,9 +35,6 @@ public class InfoDiaNivel {
 
         textoTurno = new Texto(Recursos.FUENTE_MENU, 20, Color.LIGHT_GRAY, true);
         textoTurno.setTexto("Turno");
-
-        Texto textoTurnoNombre = new Texto(Recursos.FUENTE_MENU, 24, Color.YELLOW, true);
-        textoTurnoNombre.setTexto(NIVEL.getTurno().getNombre());
 
         textoPuntos = new Texto(Recursos.FUENTE_MENU, 20, Color.LIGHT_GRAY, true);
         textoPuntos.setTexto("Puntos");
@@ -87,12 +86,16 @@ public class InfoDiaNivel {
         textoPuntos.dibujar();
 
         offsetY -= 30f;
-        String puntosTexto = NIVEL.isCompletado() ?
-            String.valueOf(NIVEL.getPuntajeObtenido()) : "---";
+        String puntosTexto = (puntajeReal > 0 || NIVEL.isCompletado()) ?
+            String.valueOf(puntajeReal) : "---";
         Texto textoPuntosValor = new Texto(Recursos.FUENTE_MENU, 28,
-            NIVEL.isCompletado() ? Color.GREEN : Color.GRAY, true);
+            (puntajeReal > 0 || NIVEL.isCompletado()) ? Color.GREEN : Color.GRAY, true);
         textoPuntosValor.setTexto(puntosTexto);
         textoPuntosValor.setPosition(centroX - textoPuntosValor.getAncho() / 2f, offsetY);
         textoPuntosValor.dibujar();
+    }
+
+    public float getY() {
+        return this.y;
     }
 }

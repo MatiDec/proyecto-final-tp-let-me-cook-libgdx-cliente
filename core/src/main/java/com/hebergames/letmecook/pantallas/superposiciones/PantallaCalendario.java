@@ -52,7 +52,8 @@ public class PantallaCalendario extends Pantalla {
 
         for (int i = 0; i < niveles.size(); i++) {
             NivelPartida nivel = niveles.get(i);
-            InfoDiaNivel info = new InfoDiaNivel(i + 1, nivel);
+            int puntajeNivel = nivel.getPuntajeObtenido();
+            InfoDiaNivel info = new InfoDiaNivel(i + 1, nivel, puntajeNivel);
             DIAS_NIVELES.add(info);
         }
 

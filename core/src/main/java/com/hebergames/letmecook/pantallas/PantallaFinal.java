@@ -28,6 +28,8 @@ public class PantallaFinal extends Pantalla {
     private final String razonDespido;
     private Texto textoDespido;
     private Texto textoRazon;
+    private final int puntajeTotal;
+    private final ArrayList<Integer> puntajesNiveles;
 
     private SpriteBatch batch;
 
@@ -39,12 +41,19 @@ public class PantallaFinal extends Pantalla {
         this.puntaje = puntaje;
         this.despedido = despedido;
         this.razonDespido = razonDespido;
+
+        GestorPartida gestorPartida = GestorPartida.getInstancia();
+        this.puntajeTotal = gestorPartida.getPuntajeTotalPartida();
+
+        this.puntajesNiveles = new ArrayList<>();
+        for (NivelPartida nivel : gestorPartida.getTodosLosNiveles()) {
+            puntajesNiveles.add(nivel.getPuntajeObtenido());
+        }
     }
 
     @Override
     public void show() {
         batch = Render.batch;
-        GestorPartida gestorPartida = GestorPartida.getInstancia();
 
         if (despedido) {
             titulo = new Texto(Recursos.FUENTE_MENU, 64, Color.RED, true);
@@ -55,7 +64,7 @@ public class PantallaFinal extends Pantalla {
         }
 
         resumenPuntaje = new Texto(Recursos.FUENTE_MENU, 40, Color.YELLOW, true);
-        resumenPuntaje.setTexto("Puntaje Total: " + puntaje);
+        resumenPuntaje.setTexto("Puntaje Total: " + puntajeTotal);
 
         opcionMenu = new Texto(Recursos.FUENTE_MENU, 28, Color.YELLOW, true);
         opcionMenu.setTexto("Presiona ENTER para volver al menú");
@@ -72,10 +81,12 @@ public class PantallaFinal extends Pantalla {
         }
 
         diasNiveles = new ArrayList<>();
+        GestorPartida gestorPartida = GestorPartida.getInstancia();
         ArrayList<NivelPartida> niveles = gestorPartida.getTodosLosNiveles();
         for (int i = 0; i < niveles.size(); i++) {
             NivelPartida nivel = niveles.get(i);
-            InfoDiaNivel info = new InfoDiaNivel(i + 1, nivel);
+            int puntajeNivel = (i < puntajesNiveles.size()) ? puntajesNiveles.get(i) : 0;
+            InfoDiaNivel info = new InfoDiaNivel(i + 1, nivel, puntajeNivel);
             diasNiveles.add(info);
         }
 
@@ -100,20 +111,58 @@ public class PantallaFinal extends Pantalla {
             info.setPosicion(posX, posY);
         }
 
-        titulo.setPosition(Gdx.graphics.getWidth()/2f - titulo.getAncho()/2f,
-            Gdx.graphics.getHeight() - 100 * escalaY);
-        resumenPuntaje.setPosition(Gdx.graphics.getWidth()/2f - resumenPuntaje.getAncho()/2f,
-            Gdx.graphics.getHeight() - 180 * escalaY);
-        opcionMenu.setPosition(Gdx.graphics.getWidth()/2f - opcionMenu.getAncho()/2f,
-            80 * escalaY);
+        posicionarTextosSegunPantalla();
 
         if (despedido && textoDespido != null && textoRazon != null) {
             textoDespido.setPosition(Gdx.graphics.getWidth()/2f - textoDespido.getAncho()/2f,
                 Gdx.graphics.getHeight() - 280 * escalaY);
             textoRazon.setPosition(Gdx.graphics.getWidth()/2f - textoRazon.getAncho()/2f,
                 Gdx.graphics.getHeight() - 330 * escalaY);
+            posicionarTextosSegunPantalla();
         }
     }
+
+    private void posicionarTextosSegunPantalla() {
+        float anchoVentana = Gdx.graphics.getWidth();
+        float altoVentana = Gdx.graphics.getHeight();
+        float escalaY = altoVentana / Gdx.graphics.getHeight();
+
+        // --- 1. Calcular la zona ocupada por las tarjetas del calendario ---
+        if (diasNiveles.isEmpty()) return;
+
+        InfoDiaNivel primera = diasNiveles.get(0);
+        InfoDiaNivel ultima = diasNiveles.get(diasNiveles.size() - 1);
+
+        float yTarjetas = primera.getY(); // todas están alineadas
+        float alturaTarjeta = Recursos.ALTO_DIA * escalaY;
+        float margenSuperiorTarjetas = yTarjetas + alturaTarjeta;
+
+        // --- 2. Calcular posiciones de textos por encima de las tarjetas ---
+        float separacionVertical = 40f * escalaY; // espacio entre líneas
+        float inicioY = Math.min(altoVentana - 100f * escalaY, margenSuperiorTarjetas + 100f * escalaY);
+
+        // --- 3. Posicionar textos principales ---
+        titulo.setPosition(anchoVentana / 2f - titulo.getAncho() / 2f, inicioY);
+
+        float yActual = inicioY - separacionVertical;
+        resumenTiempo.setPosition(anchoVentana / 2f - resumenTiempo.getAncho() / 2f, yActual);
+
+        yActual -= separacionVertical;
+        resumenPuntaje.setPosition(anchoVentana / 2f - resumenPuntaje.getAncho() / 2f, yActual);
+
+        // --- 4. Si hay textos de despido, ubicarlos debajo ---
+        if (despedido && textoDespido != null && textoRazon != null) {
+            yActual -= separacionVertical * 1.5f;
+            textoDespido.setPosition(anchoVentana / 2f - textoDespido.getAncho() / 2f, yActual);
+
+            yActual -= separacionVertical;
+            textoRazon.setPosition(anchoVentana / 2f - textoRazon.getAncho() / 2f, yActual);
+        }
+
+        // --- 5. Posicionar texto de opción de menú al fondo ---
+        opcionMenu.setPosition(anchoVentana / 2f - opcionMenu.getAncho() / 2f, 80f * escalaY);
+    }
+
 
     @Override
     public void render(float delta) {
