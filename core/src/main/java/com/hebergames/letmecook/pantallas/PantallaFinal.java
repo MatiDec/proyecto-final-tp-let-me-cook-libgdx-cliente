@@ -87,8 +87,8 @@ public class PantallaFinal extends Pantalla {
         float altoVentana = Gdx.graphics.getHeight();
 
         int cantidadDias = diasNiveles.size();
-        float escalaX = anchoVentana / 1920f;
-        float escalaY = altoVentana / 1080f;
+        float escalaX = anchoVentana / Gdx.graphics.getWidth();
+        float escalaY = altoVentana / Gdx.graphics.getHeight();
 
         float anchoTotal = (cantidadDias * Recursos.ANCHO_DIA * escalaX) + ((cantidadDias - 1) * Recursos.ESPACIADO * escalaX);
         float inicioX = (anchoVentana - anchoTotal) / 2f;

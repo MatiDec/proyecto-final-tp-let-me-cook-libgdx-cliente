@@ -121,6 +121,9 @@ public class ClienteRed {
                 jugadorDesconectado = true;
                 razonDesconexion = "Se perdió la conexión con un jugador";
                 break;
+            default:
+                jugadorDesconectado = true;
+                razonDesconexion = desc.getRazon();
         }
 
         conectado = false;

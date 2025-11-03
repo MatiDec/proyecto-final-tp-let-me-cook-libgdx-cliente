@@ -106,6 +106,23 @@ public class GestorPartida {
         puntajeTotalPartida = 0;
     }
 
+    public void avanzarIndiceNivel() {
+        nivelActual++;
+    }
+
+    public void establecerNivelActual(int indice) {
+        if (indice >= 0 && indice < NIVELES_PARTIDA.size()) {
+            nivelActual = indice;
+        }
+    }
+
+    public void sumarPuntaje(int puntaje) {
+        if (nivelActual > 0 && nivelActual - 1 < NIVELES_PARTIDA.size()) {
+            NIVELES_PARTIDA.get(nivelActual - 1).marcarCompletado(puntaje);
+        }
+        puntajeTotalPartida += puntaje;
+    }
+
     public int getNivelActualIndex() {
         return nivelActual;
     }

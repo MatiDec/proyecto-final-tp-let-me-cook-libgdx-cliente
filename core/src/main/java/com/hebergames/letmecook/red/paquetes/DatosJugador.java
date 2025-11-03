@@ -7,8 +7,8 @@ public class DatosJugador implements Serializable {
     public float angulo;
     public String objetoEnMano;
     public boolean estaEnMenu;
+    public boolean estaMoviendose;
 
-    // 👇 NUEVOS - Para deslizamiento
     public boolean estaCorriendo;
     public float velocidadX;
     public float velocidadY;
@@ -27,5 +27,6 @@ public class DatosJugador implements Serializable {
         this.estaCorriendo = estaCorriendo;
         this.velocidadX = velocidadX;
         this.velocidadY = velocidadY;
+        this.estaMoviendose = (Math.abs(velocidadX) > 0.1f || Math.abs(velocidadY) > 0.1f);
     }
 }

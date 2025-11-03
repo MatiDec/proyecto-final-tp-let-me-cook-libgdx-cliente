@@ -21,6 +21,11 @@ public class PantallaConexion extends Pantalla {
     private StringBuilder inputIP;
     private boolean intentandoConectar;
 
+    private boolean mostrandoError = false;
+    private String mensajeError = "";
+    private float tiempoError = 0f;
+    private static final float TIEMPO_MOSTRAR_ERROR = 5f;
+
     public PantallaConexion() {
         inputIP = new StringBuilder("192.168.0.202");
         intentandoConectar = false;
@@ -54,6 +59,23 @@ public class PantallaConexion extends Pantalla {
 
         manejarInput();
 
+        // 👇 Verificar desconexión
+        if (cliente != null && !cliente.isConectado()) {
+            if (cliente.isServidorCerrado()) {
+                mostrarError("Servidor cerrado");
+            } else if (cliente.isJugadorDesconectado()) {
+                mostrarError(cliente.getRazonDesconexion());
+            }
+        }
+
+        // 👇 Actualizar temporizador de error
+        if (mostrandoError) {
+            tiempoError += delta;
+            if (tiempoError >= TIEMPO_MOSTRAR_ERROR) {
+                limpiarError();
+            }
+        }
+
         // Si hay cliente y está esperando jugadores
         if (cliente != null && cliente.isEsperandoJugadores()) {
             textoEstado.setTexto("Esperando a otro jugador...");
@@ -72,6 +94,28 @@ public class PantallaConexion extends Pantalla {
         textoIP.dibujar();
         textoEstado.dibujar();
         batch.end();
+    }
+
+    private void mostrarError(String mensaje) {
+        mostrandoError = true;
+        mensajeError = mensaje;
+        tiempoError = 0f;
+        textoEstado.setTexto("ERROR: " + mensaje);
+        textoEstado.getFuente().setColor(Color.RED);
+
+        // Limpiar cliente
+        if (cliente != null) {
+            cliente.desconectar();
+            cliente = null;
+        }
+        intentandoConectar = false;
+    }
+
+    private void limpiarError() {
+        mostrandoError = false;
+        mensajeError = "";
+        textoEstado.setTexto("");
+        textoEstado.getFuente().setColor(Color.WHITE);
     }
 
     private void manejarInput() {

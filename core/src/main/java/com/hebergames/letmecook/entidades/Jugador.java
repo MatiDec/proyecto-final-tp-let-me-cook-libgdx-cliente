@@ -52,6 +52,7 @@ public class Jugador {
 
     protected GestorAnimacion gestorAnimacion;
     private String objetoEnMano = "vacio";
+    private boolean estaMoviendose = false;
 
     public Jugador(float x, float y, GestorAnimacion gestorAnimacion) {
         this.posicion = new Vector2(x, y);
@@ -64,6 +65,9 @@ public class Jugador {
     }
 
     public void actualizar(float delta) {
+
+        estaMoviendose = !velocidad.isZero(0.01f) || estaDeslizando;
+
         if (velocidad.isZero(0.01f) && !estaDeslizando) {
             frameActual = animacion.getKeyFrame(0, true);
             return;
@@ -377,5 +381,18 @@ public class Jugador {
 
     public float getAnguloRotacion() {
         return this.anguloRotacion;
+    }
+
+    public void setMoviendose(boolean moviendose) {
+        this.estaMoviendose = moviendose;
+        if (moviendose && animacion != null) {
+            estadoTiempo += 0.016f; // Simular delta
+        } else {
+            estadoTiempo = 0;
+        }
+    }
+
+    public boolean estaMoviendose() {
+        return this.estaMoviendose;
     }
 }

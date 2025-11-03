@@ -23,12 +23,14 @@ import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.estaciones.interaccionclientes.CajaRegistradora;
 import com.hebergames.letmecook.estaciones.interaccionclientes.CajaVirtual;
 import com.hebergames.letmecook.estaciones.interaccionclientes.MesaRetiro;
+import com.hebergames.letmecook.estaciones.procesadoras.EstadoMaquina;
 import com.hebergames.letmecook.estaciones.procesadoras.Procesadora;
 import com.hebergames.letmecook.eventos.entrada.DatosEntrada;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
 import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
 import com.hebergames.letmecook.eventos.puntaje.GestorPuntaje;
 import com.hebergames.letmecook.mapa.GestorMapa;
+import com.hebergames.letmecook.mapa.indicadores.EstadoIndicador;
 import com.hebergames.letmecook.mapa.indicadores.GestorIndicadores;
 import com.hebergames.letmecook.mapa.niveles.*;
 import com.hebergames.letmecook.pantallas.juego.GestorTiempoJuego;
@@ -146,7 +148,7 @@ public class PantallaJuegoOnline extends Pantalla {
 
         estaciones = gestorMapa.getEstaciones();
 
-        // Registrar indicadores de procesadoras
+        // 👇 Registrar indicadores igual que en PantallaJuego
         for (EstacionTrabajo estacion : estaciones) {
             if (estacion.getProcesadora() != null && estacion.getProcesadora() instanceof Procesadora) {
                 Procesadora proc = (Procesadora) estacion.getProcesadora();
@@ -436,43 +438,33 @@ public class PantallaJuegoOnline extends Pantalla {
         DatosJugador datosJ2 = estado.getJugador2();
 
         if (datosJ1 != null) {
-            // 🎯 INTERPOLACIÓN SUAVE - en lugar de asignación directa
             Vector2 posicionObjetivo = new Vector2(datosJ1.x, datosJ1.y);
-            jugador1Local.getPosicion().lerp(posicionObjetivo, 0.3f); // Ajusta entre 0.1-0.5
-
+            jugador1Local.getPosicion().lerp(posicionObjetivo, 0.3f);
             jugador1Local.setAnguloRotacion(datosJ1.angulo);
-
-//            // Normalizar diferencia de ángulo (-180 a 180)
-//            while (diferencia > 180) diferencia -= 360;
-//            while (diferencia < -180) diferencia += 360;
-
-//            jugador1Local.setAnguloRotacion(anguloActual + diferencia * 0.3f);
-
-            // Objeto en mano (sin interpolación)
             jugador1Local.setObjetoEnMano(datosJ1.objetoEnMano);
 
-            // Mantener deslizamiento
+            if (datosJ1.estaMoviendose) {
+                jugador1Local.setMoviendose(true);
+            } else {
+                jugador1Local.setMoviendose(false);
+            }
+
             if (datosJ1.estaCorriendo && datosJ1.velocidadX == 0 && datosJ1.velocidadY == 0) {
                 jugador1Local.iniciarDeslizamiento();
             }
         }
 
         if (datosJ2 != null) {
-            // 🎯 INTERPOLACIÓN SUAVE - igual para J2
             Vector2 posicionObjetivo = new Vector2(datosJ2.x, datosJ2.y);
             jugador2Local.getPosicion().lerp(posicionObjetivo, 0.3f);
-
-//            float anguloObjetivo = datosJ2.angulo;
-//            float anguloActual = jugador2Local.getAnguloRotacion();
-//            float diferencia = anguloObjetivo - anguloActual;
-//
-//            while (diferencia > 180) diferencia -= 360;
-//            while (diferencia < -180) diferencia += 360;
-
-            //jugador2Local.setAnguloRotacion(anguloActual + diferencia * 0.3f);
             jugador2Local.setAnguloRotacion(datosJ2.angulo);
-
             jugador2Local.setObjetoEnMano(datosJ2.objetoEnMano);
+
+            if (datosJ2.estaMoviendose) {
+                jugador2Local.setMoviendose(true);
+            } else {
+                jugador2Local.setMoviendose(false);
+            }
 
             if (datosJ2.estaCorriendo && datosJ2.velocidadX == 0 && datosJ2.velocidadY == 0) {
                 jugador2Local.iniciarDeslizamiento();
@@ -492,19 +484,24 @@ public class PantallaJuegoOnline extends Pantalla {
 
         DatosJugador datosLocal = (miIdJugador == 1) ? estado.getJugador1() : estado.getJugador2();
 
-        // Actualizar estados de todas las estaciones
         for (DatosEstacion datosEst : estado.getEstaciones()) {
             if (datosEst.index < 0 || datosEst.index >= estaciones.size()) continue;
 
             EstacionTrabajo estacion = estaciones.get(datosEst.index);
 
-            // Actualizar estado de procesadoras
+            // 👇 Actualizar progreso de procesadoras
             if (estacion.getProcesadora() instanceof Procesadora) {
                 Procesadora proc = (Procesadora) estacion.getProcesadora();
                 actualizarEstadoProcesadora(proc, datosEst);
+
+                // 👇 Actualizar indicador visual
+                if (proc.getIndicador() != null) {
+                    EstadoIndicador estadoIndicador = EstadoIndicador.valueOf(datosEst.estadoIndicador);
+                    proc.getIndicador().setEstado(estadoIndicador);
+                    proc.getIndicador().setVisible(!datosEst.estadoIndicador.equals("INACTIVO"));
+                }
             }
 
-            // Actualizar estado de máquina rota
             estacion.setFueraDeServicio(datosEst.fueraDeServicio);
         }
 
@@ -588,10 +585,10 @@ public class PantallaJuegoOnline extends Pantalla {
         gestorMapa.renderizar(gestorViewport.getCamaraJuego());
 
         // Actualizar indicadores si el juego está activo
-//        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && gestorMostrarCalendario.estaMostrando()) {
-//            gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
-//            gestorAudio.reanudarMusica();
-//        }
+        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && gestorMostrarCalendario.estaMostrando()) {
+            gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
+            gestorAudio.reanudarMusica();
+        }
 
         if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible()) {
             // Actualizar animaciones de jugadores
@@ -613,16 +610,37 @@ public class PantallaJuegoOnline extends Pantalla {
         jugador1Local.dibujar(batch);
         jugador2Local.dibujar(batch);
 
-        // Dibujar estados de procesadoras
-        for (EstacionTrabajo estacion : estaciones) {
-            if (estacion.getProcesadora() instanceof Procesadora) {
-                Procesadora proc = (Procesadora) estacion.getProcesadora();
-                proc.dibujarEstado(batch);
+        // 👇 Dibujar overlays de máquinas procesadoras
+        PaqueteEstado estado = cliente.getUltimoEstado();
+        if (estado != null) {
+            for (DatosEstacion datosEst : estado.getEstaciones()) {
+                if (datosEst.index < 0 || datosEst.index >= estaciones.size()) continue;
+
+                EstacionTrabajo estacion = estaciones.get(datosEst.index);
+
+                if (estacion.getProcesadora() instanceof Procesadora) {
+                    Procesadora proc = (Procesadora) estacion.getProcesadora();
+
+                    // Obtener textura según estado
+                    TextureRegion overlay = null;
+
+                    if (datosEst.estadoMaquina.equals("ACTIVA")) {
+                        overlay = GestorTexturas.getInstance()
+                            .getTexturaMaquina(datosEst.tipoEstacion.toLowerCase(), EstadoMaquina.ACTIVA);
+                    } else if (datosEst.estadoMaquina.equals("LISTA")) {
+                        overlay = GestorTexturas.getInstance()
+                            .getTexturaMaquina(datosEst.tipoEstacion.toLowerCase(), EstadoMaquina.LISTA);
+                    }
+
+                    if (overlay != null) {
+                        Rectangle area = estacion.area;
+                        batch.draw(overlay, area.x, area.y, area.width, area.height);
+                    }
+                }
             }
         }
 
         // Dibujar clientes desde el servidor
-        PaqueteEstado estado = cliente.getUltimoEstado();
         if (estado != null) {
             for (DatosCliente dc : estado.getClientes()) {
                 dibujarClienteDesdeServidor(dc);
@@ -779,22 +797,76 @@ public class PantallaJuegoOnline extends Pantalla {
     private void cambiarANuevoNivel(PaqueteCambioNivel paquete) {
         System.out.println("🎮 Cambiando a nivel " + paquete.getNumeroNivel());
 
-        // ✅ LIMPIAR OVERLAYS ANTES DE RECREAR
+        // 👇 Actualizar gestor partida (solo marcar progreso)
+        GestorPartida gestorPartida = GestorPartida.getInstancia();
+        gestorPartida.sumarPuntaje(paquete.getPuntajeNivelCompletado());
+        gestorPartida.establecerNivelActual(paquete.getNumeroNivel());
+
+        // Limpiar recursos del nivel anterior
+        limpiarRecursosNivel();
+
+        // 👇 Reinicializar solo lo visual del nuevo nivel
+        reinicializarNivel();
+
+        gestorAudio.reproducirSonido(SonidoJuego.NIVEL_COMPLETADO);
+    }
+
+    private void reinicializarNivel() {
+        GestorPartida gestorPartida = GestorPartida.getInstancia();
+        NivelPartida nivel = gestorPartida.getNivelActual();
+
+        // Reinicializar mapa
+        gestorMapa = new GestorMapa();
+        gestorMapa.setMapaActual(nivel.getMapa());
+        estaciones = gestorMapa.getEstaciones();
+
+        // Registrar indicadores
+        gestorIndicadores = new GestorIndicadores();
+        for (EstacionTrabajo estacion : estaciones) {
+            if (estacion.getProcesadora() != null && estacion.getProcesadora() instanceof Procesadora) {
+                Procesadora proc = (Procesadora) estacion.getProcesadora();
+                if (proc.getIndicador() != null) {
+                    gestorIndicadores.registrarIndicador(proc.getIndicador());
+                }
+            }
+        }
+
+        // Reinicializar jugadores con nuevas animaciones
+        gestorAnimacionJ1 = new GestorAnimacion(Recursos.JUGADOR_SPRITESHEET, 32, 32, 0.2f);
+        gestorAnimacionJ2 = new GestorAnimacion(Recursos.JUGADOR_SPRITESHEET, 32, 32, 0.2f);
+
+        jugador1Local = new Jugador(0, 0, gestorAnimacionJ1);
+        jugador2Local = new Jugador(0, 0, gestorAnimacionJ2);
+
+        jugador1Local.actualizar(0);
+        jugador2Local.actualizar(0);
+
+        // Cambiar música
+        gestorAudio.detenerMusica();
+        gestorAudio.reproducirMusicaNivel(nivel.getCancionNivel());
+
+        // Limpiar clientes visuales
+        clientesVisualesMap.clear();
+
+        // Reiniciar tiempo
+        gestorTiempo = new GestorTiempoJuego(TIEMPO_OBJETIVO);
+
+        // Mostrar calendario del nuevo nivel
+        gestorMostrarCalendario = new GestorMostrarCalendario();
+        gestorMostrarCalendario.iniciarMostrar();
+
+        // 👇 Recrear overlays con nueva referencia
         if (gestorOverlays != null) {
             gestorOverlays.dispose();
         }
+        PantallaPausa pantallaPausa = new PantallaPausa(this);
+        PantallaCalendario pantallaCalendario = new PantallaCalendario(this);
+        gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio);
+        gestorOverlays.mostrarCalendarioInicial();
 
-        // Limpiar recursos actuales
-        limpiarRecursosNivel();
+        GestorEventosAleatorios.getInstancia().reset();
 
-        // Actualizar gestor de partida
-        GestorPartida gestorPartida = GestorPartida.getInstancia();
-        gestorPartida.avanzarNivel(paquete.getPuntajeNivelCompletado());
-
-        // Reiniciar pantalla con nuevo nivel
-        show();
-
-        gestorAudio.reproducirSonido(SonidoJuego.NIVEL_COMPLETADO);
+        System.out.println("✅ Cliente listo para nivel " + gestorPartida.getNivelActualIndex());
     }
 
     private void limpiarRecursosNivel() {

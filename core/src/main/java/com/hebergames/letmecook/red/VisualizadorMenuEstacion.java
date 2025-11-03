@@ -95,8 +95,17 @@ public class VisualizadorMenuEstacion {
 
     public void mostrarMenuCafetera(boolean esJugador1, String estadoActual, float progreso) {
         this.esJugador1 = esJugador1;
-        this.visible = true;
         this.tipoEstacion = "Cafetera";
+
+        // Si el menú ya está visible y es el mismo tipo de estación,
+        // y estamos en PREPARANDO, solo actualizamos el título para mostrar el progreso.
+        if (this.visible && "Cafetera".equals(this.tipoEstacion) && textoTitulo != null && "PREPARANDO".equals(estadoActual)) {
+            textoTitulo.setTexto(String.format("Preparando... %.0f%%", progreso * 100f));
+            return;
+        }
+
+        // Si no, reconstruimos el menú (caso inicial o cambio de estado)
+        this.visible = true;
         limpiarTextos();
 
         textoTitulo = obtenerTextoLibre();
@@ -115,13 +124,25 @@ public class VisualizadorMenuEstacion {
             case "LISTO":
                 textoTitulo.setTexto("¡Café listo! Presiona E");
                 break;
+            default:
+                textoTitulo.setTexto("Cafetera");
+                break;
         }
     }
 
     public void mostrarMenuFuente(boolean esJugador1, String estadoActual, float progreso) {
         this.esJugador1 = esJugador1;
-        this.visible = true;
         this.tipoEstacion = "Fuente";
+
+        // Si el menú ya está visible y es el mismo tipo de estación,
+        // y estamos en PREPARANDO, solo actualizamos el título para mostrar el progreso.
+        if (this.visible && "Fuente".equals(this.tipoEstacion) && textoTitulo != null && "PREPARANDO".equals(estadoActual)) {
+            textoTitulo.setTexto(String.format("Sirviendo... %.0f%%", progreso * 100f));
+            return;
+        }
+
+        // Si no, reconstruimos el menú (caso inicial o cambio de estado)
+        this.visible = true;
         limpiarTextos();
 
         textoTitulo = obtenerTextoLibre();
@@ -140,8 +161,12 @@ public class VisualizadorMenuEstacion {
             case "LISTO":
                 textoTitulo.setTexto("¡Bebida lista! Presiona E");
                 break;
+            default:
+                textoTitulo.setTexto("Fuente");
+                break;
         }
     }
+
 
     public void mostrarMenuEnvasadora(boolean esJugador1, String nombreIngrediente) {
         this.esJugador1 = esJugador1;
@@ -194,15 +219,18 @@ public class VisualizadorMenuEstacion {
         float anchoMenu = 400f;
         float x = esJugador1 ? margen : anchoUI - anchoMenu - margen;
 
+        // 👇 Calcular altura inicial basada en cantidad de elementos
+        float espaciado = 40f;
+        float alturaTotal = (textosMenu.size() + 1) * espaciado; // +1 por el título
+        float yInicial = (altoUI / 2f) + (alturaTotal / 2f);
+
         if (textoTitulo != null) {
-            textoTitulo.setPosition(x, altoUI / 2f + 100);
+            textoTitulo.setPosition(x, yInicial);
             textoTitulo.dibujarEnUi(batch);
+            yInicial -= espaciado * 1.5f; // Separación extra después del título
         }
 
-        float espaciado = 40f;
-        float alturaTotal = textosMenu.size() * espaciado;
-        float y = (altoUI / 2f) + (alturaTotal / 2f);
-
+        float y = yInicial;
         for (Texto t : textosMenu) {
             t.setPosition(x, y);
             t.dibujarEnUi(batch);
