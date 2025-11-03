@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="128" tileheight="128" infinite="0" nextlayerid="5" nextobjectid="37">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="128" tileheight="128" infinite="0" nextlayerid="5" nextobjectid="39">
  <tileset firstgid="1" source="Nivel_1.tsx"/>
  <layer id="1" name="Capa de patrones 1" width="30" height="30">
   <data encoding="csv">
@@ -17,7 +17,7 @@
 27,27,27,27,27,12,23,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,24,12,27,27,27,27,27,
 27,27,27,27,27,12,1610612766,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,2684354590,12,27,27,27,27,27,
 27,27,27,27,27,12,17,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,21,12,27,27,27,27,27,
-27,27,27,27,27,12,14,22,2684354562,2684354562,22,1610612742,1610612742,22,3221225477,3221225477,22,8,8,22,1,1,22,13,12,27,27,27,27,27,
+27,27,27,27,27,12,14,22,2684354562,2684354562,4,1610612742,1610612742,22,3221225477,3221225477,22,8,8,4,1,1,22,13,12,27,27,27,27,27,
 27,27,27,27,27,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,27,27,27,27,27,
 27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
 27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
@@ -58,6 +58,8 @@
   <object id="21" name="Tostadora" type="Interactuable" x="2304" y="1792" width="128" height="128"/>
   <object id="23" name="Cafetera" type="Interactuable" x="2560" y="1792" width="128" height="128"/>
   <object id="24" name="Cafetera" type="Interactuable" x="2688" y="1792" width="128" height="128"/>
+  <object id="37" name="AreaEnsamblaje" type="Interactuable" x="1280" y="1792" width="128" height="128"/>
+  <object id="38" name="AreaEnsamblaje" type="Interactuable" x="2432" y="1792" width="128" height="128"/>
  </objectgroup>
  <objectgroup id="3" name="Colisionables">
   <object id="25" type="Colisionable" x="896" y="1152" width="2048" height="128"/>
