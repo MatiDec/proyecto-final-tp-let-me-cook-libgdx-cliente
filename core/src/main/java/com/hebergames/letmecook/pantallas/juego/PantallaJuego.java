@@ -48,7 +48,7 @@ public class PantallaJuego extends Pantalla {
 
     private final int MIN_CLIENTES_SUCURSAL_CHICA = 10;
     private final int MIN_CLIENTES_SUCURSAL_GRANDE = 20;
-    private final int TIEMPO_OBJETIVO = 200;
+    private final int TIEMPO_OBJETIVO = 90;
     private final boolean MODO_MULTIJUGADOR = true;
 
     private SpriteBatch batch;

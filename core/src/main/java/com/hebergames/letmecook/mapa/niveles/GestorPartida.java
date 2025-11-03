@@ -132,4 +132,9 @@ public class GestorPartida {
     }
 
     public int getPuntajeTotalPartida() { return this.puntajeTotalPartida; }
+
+    public void sumarPuntajeSinModificarNivel(int puntaje) {
+        puntajeTotalPartida += puntaje;
+    }
+
 }

@@ -53,6 +53,7 @@ public class Jugador {
     protected GestorAnimacion gestorAnimacion;
     private String objetoEnMano = "vacio";
     private boolean estaMoviendose = false;
+    private boolean forzarAnimacionMovimiento = false;
 
     public Jugador(float x, float y, GestorAnimacion gestorAnimacion) {
         this.posicion = new Vector2(x, y);
@@ -65,24 +66,28 @@ public class Jugador {
     }
 
     public void actualizar(float delta) {
+        if (animacion != null) {
+            frameActual = animacion.getKeyFrame(estadoTiempo, true);
+        }
 
-        estaMoviendose = !velocidad.isZero(0.01f) || estaDeslizando;
+        // ✅ Permitir animación si hay velocidad O si está forzada (modo online)
+        boolean debeAnimarse = !velocidad.isZero(0.01f) || forzarAnimacionMovimiento;
 
-        if (velocidad.isZero(0.01f) && !estaDeslizando) {
-            frameActual = animacion.getKeyFrame(0, true);
+        if (velocidad.isZero(0.01f) && !estaDeslizando && !forzarAnimacionMovimiento) {
+            if (animacion != null) frameActual = animacion.getKeyFrame(0, true);
             return;
         }
 
-        if (velocidad.x != 0 || velocidad.y != 0 || estaDeslizando) {
+        if (velocidad.x != 0 || velocidad.y != 0 || estaDeslizando || forzarAnimacionMovimiento) {
             estadoTiempo += delta;
         } else {
             estadoTiempo = 0;
         }
-        frameActual = animacion.getKeyFrame(estadoTiempo, true);
+
+        if (animacion != null) frameActual = animacion.getKeyFrame(estadoTiempo, true);
 
         if (estaDeslizando) {
             tiempoDeslizamiento += delta;
-
             float DURACION_DESLIZAMIENTO = 0.3f;
             float progreso = tiempoDeslizamiento / DURACION_DESLIZAMIENTO;
             float factorReduccion = Math.max(0f, 1f - progreso);
@@ -137,7 +142,6 @@ public class Jugador {
                 tiempoColisionReset = 0f;
             }
         }
-
     }
 
     public void dibujar(SpriteBatch batch) {
@@ -379,19 +383,20 @@ public class Jugador {
         this.interactuables = rectangulosInteractuables;
     }
 
-    public float getAnguloRotacion() {
-        return this.anguloRotacion;
-    }
-
     public void setMoviendose(boolean moviendose) {
-        this.estaMoviendose = moviendose;
-        if (moviendose && animacion != null) {
-            estadoTiempo += 0.016f; // Simular delta
-        } else {
+        this.forzarAnimacionMovimiento = moviendose;
+        if (!moviendose) {
             estadoTiempo = 0;
         }
     }
 
+    public float getAnguloRotacion() {
+        return this.anguloRotacion;
+    }
+
+    public Vector2 getVelocidad() {
+        return this.velocidad;
+    }
     public boolean estaMoviendose() {
         return this.estaMoviendose;
     }

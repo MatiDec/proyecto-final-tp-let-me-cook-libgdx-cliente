@@ -29,6 +29,8 @@ public abstract class PaqueteRed implements Serializable {
     public static PaqueteRed deserializar(byte[] datos) throws IOException, ClassNotFoundException {
         ByteArrayInputStream bis = new ByteArrayInputStream(datos);
         ObjectInputStream ois = new ObjectInputStream(bis);
-        return (PaqueteRed) ois.readObject();
+        PaqueteRed paquete = (PaqueteRed) ois.readObject();
+        return paquete;
     }
+
 }

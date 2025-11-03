@@ -437,7 +437,9 @@ public class PantallaJuegoOnline extends Pantalla {
         DatosJugador datosJ1 = estado.getJugador1();
         DatosJugador datosJ2 = estado.getJugador2();
 
+        // ========== ACTUALIZAR JUGADOR 1 ==========
         if (datosJ1 != null) {
+
             Vector2 posicionObjetivo = new Vector2(datosJ1.x, datosJ1.y);
             jugador1Local.getPosicion().lerp(posicionObjetivo, 0.3f);
             jugador1Local.setAnguloRotacion(datosJ1.angulo);
@@ -454,9 +456,11 @@ public class PantallaJuegoOnline extends Pantalla {
             }
         }
 
+        // ========== ACTUALIZAR JUGADOR 2 ==========
         if (datosJ2 != null) {
             Vector2 posicionObjetivo = new Vector2(datosJ2.x, datosJ2.y);
             jugador2Local.getPosicion().lerp(posicionObjetivo, 0.3f);
+
             jugador2Local.setAnguloRotacion(datosJ2.angulo);
             jugador2Local.setObjetoEnMano(datosJ2.objetoEnMano);
 
@@ -471,10 +475,12 @@ public class PantallaJuegoOnline extends Pantalla {
             }
         }
 
-        // Actualizar gestorUI y estaciones
         gestorUI.actualizarPuntaje(estado.getPuntaje());
         gestorUI.actualizarTiempo(estado.getTiempoRestante());
-        gestorUI.actualizarInventario(datosJ1.objetoEnMano, datosJ2.objetoEnMano);
+
+        String itemJ1 = datosJ1 != null ? datosJ1.objetoEnMano : "Vacío";
+        String itemJ2 = datosJ2 != null ? datosJ2.objetoEnMano : "Vacío";
+        gestorUI.actualizarInventario(itemJ1, itemJ2);
     }
 
 
@@ -590,7 +596,7 @@ public class PantallaJuegoOnline extends Pantalla {
         gestorMapa.renderizar(gestorViewport.getCamaraJuego());
 
         // Actualizar indicadores si el juego está activo
-        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && gestorMostrarCalendario.estaMostrando()) {
+        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible()) {
             gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
             gestorAudio.reanudarMusica();
         }
@@ -802,15 +808,18 @@ public class PantallaJuegoOnline extends Pantalla {
     private void cambiarANuevoNivel(PaqueteCambioNivel paquete) {
         System.out.println("🎮 Cambiando a nivel " + paquete.getNumeroNivel());
 
-        // 👇 Actualizar gestor partida (solo marcar progreso)
         GestorPartida gestorPartida = GestorPartida.getInstancia();
-        gestorPartida.sumarPuntaje(paquete.getPuntajeNivelCompletado());
+        int nivelCompletadoIndex = paquete.getNumeroNivel() - 1; // El nivel que acabamos de terminar
+
+        if (nivelCompletadoIndex >= 0 && nivelCompletadoIndex < gestorPartida.getTodosLosNiveles().size()) {
+            NivelPartida nivelCompletado = gestorPartida.getTodosLosNiveles().get(nivelCompletadoIndex);
+            nivelCompletado.marcarCompletado(paquete.getPuntajeNivelCompletado());
+            System.out.println("✅ Nivel " + (nivelCompletadoIndex + 1) + " marcado con puntaje: " + paquete.getPuntajeNivelCompletado());
+        }
+
+        gestorPartida.sumarPuntajeSinModificarNivel(paquete.getPuntajeNivelCompletado());
         gestorPartida.establecerNivelActual(paquete.getNumeroNivel());
-
-        // Limpiar recursos del nivel anterior
         limpiarRecursosNivel();
-
-        // 👇 Reinicializar solo lo visual del nuevo nivel
         reinicializarNivel();
 
         gestorAudio.reproducirSonido(SonidoJuego.NIVEL_COMPLETADO);
@@ -820,12 +829,9 @@ public class PantallaJuegoOnline extends Pantalla {
         GestorPartida gestorPartida = GestorPartida.getInstancia();
         NivelPartida nivel = gestorPartida.getNivelActual();
 
-        // Reinicializar mapa
         gestorMapa = new GestorMapa();
         gestorMapa.setMapaActual(nivel.getMapa());
         estaciones = gestorMapa.getEstaciones();
-
-        // Registrar indicadores
         gestorIndicadores = new GestorIndicadores();
         for (EstacionTrabajo estacion : estaciones) {
             if (estacion.getProcesadora() != null && estacion.getProcesadora() instanceof Procesadora) {
@@ -836,7 +842,6 @@ public class PantallaJuegoOnline extends Pantalla {
             }
         }
 
-        // Reinicializar jugadores con nuevas animaciones
         gestorAnimacionJ1 = new GestorAnimacion(Recursos.JUGADOR_SPRITESHEET, 32, 32, 0.2f);
         gestorAnimacionJ2 = new GestorAnimacion(Recursos.JUGADOR_SPRITESHEET, 32, 32, 0.2f);
 
@@ -846,7 +851,6 @@ public class PantallaJuegoOnline extends Pantalla {
         jugador1Local.actualizar(0);
         jugador2Local.actualizar(0);
 
-        // Cambiar música
         gestorAudio.detenerMusica();
         gestorAudio.reproducirMusicaNivel(nivel.getCancionNivel());
 
@@ -875,7 +879,6 @@ public class PantallaJuegoOnline extends Pantalla {
     }
 
     private void limpiarRecursosNivel() {
-        // ✅ LIBERAR ANIMACIONES
         if (gestorAnimacionJ1 != null) {
             gestorAnimacionJ1.dispose();
             gestorAnimacionJ1 = null;
@@ -900,6 +903,18 @@ public class PantallaJuegoOnline extends Pantalla {
         if (estado != null && estado.isJuegoTerminado()) {
             int puntaje = estado.getPuntaje();
             String razon = estado.getRazonFin();
+
+            // ✅ Guardar puntaje del nivel actual antes de finalizar
+            GestorPartida gestorPartida = GestorPartida.getInstancia();
+            int nivelActualIndex = gestorPartida.getNivelActualIndex();
+
+            if (nivelActualIndex >= 0 && nivelActualIndex < gestorPartida.getTodosLosNiveles().size()) {
+                NivelPartida nivelActual = gestorPartida.getTodosLosNiveles().get(nivelActualIndex);
+                if (!nivelActual.isCompletado()) {
+                    nivelActual.marcarCompletado(puntaje - gestorPartida.getPuntajeTotalPartida());
+                    System.out.println("✅ Último nivel marcado con puntaje: " + (puntaje - gestorPartida.getPuntajeTotalPartida()));
+                }
+            }
 
             // ✅ Determinar si es despido
             boolean esDespido = razon != null && !razon.isEmpty();
