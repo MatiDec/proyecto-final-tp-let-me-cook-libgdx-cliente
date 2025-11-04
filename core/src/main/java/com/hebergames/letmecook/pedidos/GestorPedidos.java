@@ -79,7 +79,6 @@ public class GestorPedidos {
         int puntos;
 
         if (correcto && !productosEsperados.isEmpty()) {
-            // Producto correcto pero faltan más
             float porcentajeTiempo = cliente.getPorcentajeTiempo();
             if (porcentajeTiempo < 0.5f) {
                 puntos = 50;

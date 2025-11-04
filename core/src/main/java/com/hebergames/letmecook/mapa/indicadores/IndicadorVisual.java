@@ -81,12 +81,6 @@ public class IndicadorVisual {
     }
 
     public void dibujar(SpriteBatch batch) {
-        // 👇 DEBUG: Verificar si llega aquí
-        if (estado != EstadoIndicador.INACTIVO) {
-            System.out.println("🎨 Intentando dibujar - visible=" + visible +
-                ", textura=" + (texturaActual != null ? "OK" : "NULL") +
-                ", estado=" + estado);
-        }
         if (!visible || texturaActual == null) return;
 
         float TAMANO = 32f;
@@ -129,9 +123,6 @@ public class IndicadorVisual {
         this.estado = estado;
         actualizarTextura();
         this.visible = !estado.equals(EstadoIndicador.INACTIVO);
-        System.out.println("🔔 IndicadorVisual.setEstado(): " + estado +
-            ", textura=" + (texturaActual != null ? "OK" : "NULL") +
-            ", visible=" + visible);
     }
 
     private void actualizarTextura() {
@@ -155,14 +146,14 @@ public class IndicadorVisual {
     }
 
     public boolean isVisible() {
-        return visible;
+        return this.visible;
     }
 
     public EstadoIndicador getEstado() {
-        return estado;
+        return this.estado;
     }
 
     public boolean isEnBorde() {
-        return enBorde;
+        return this.enBorde;
     }
 }

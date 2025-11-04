@@ -4,34 +4,33 @@ import com.hebergames.letmecook.red.PaqueteRed;
 
 import java.util.ArrayList;
 
-// === PAQUETE ESTADO COMPLETO ===
 public class PaqueteEstado extends PaqueteRed {
-    private DatosJugador jugador1;
-    private DatosJugador jugador2;
-    private ArrayList<DatosCliente> clientes;
-    private ArrayList<DatosEstacion> estaciones;
-    private int puntaje;
-    private int tiempoRestante;
-    private boolean juegoTerminado;
-    private String razonFin;
+    private final DatosJugador JUGADOR_1;
+    private final DatosJugador JUGADOR_2;
+    private final ArrayList<DatosCliente> CLIENTES;
+    private final ArrayList<DatosEstacion> ESTACIONES;
+    private final int PUNTAJE;
+    private final int TIEMPO_RESTANTE;
+    private final boolean JUEGO_TERMINADO;
+    private final String RAZON_FIN;
 
     public PaqueteEstado(DatosJugador j1, DatosJugador j2,
-                         ArrayList<DatosCliente> clientes,
-                         ArrayList<DatosEstacion> estaciones,
-                         int puntaje, int tiempoRestante,
-                         boolean juegoTerminado, String razonFin) {
-        this.jugador1 = j1;
-        this.jugador2 = j2;
-        this.clientes = clientes;
-        this.estaciones = estaciones;
-        this.puntaje = puntaje;
-        this.tiempoRestante = tiempoRestante;
-        this.juegoTerminado = juegoTerminado;
-        this.razonFin = razonFin;
+                         ArrayList<DatosCliente> CLIENTES,
+                         ArrayList<DatosEstacion> ESTACIONES,
+                         int PUNTAJE, int TIEMPO_RESTANTE,
+                         boolean JUEGO_TERMINADO, String RAZON_FIN) {
+        this.JUGADOR_1 = j1;
+        this.JUGADOR_2 = j2;
+        this.CLIENTES = CLIENTES;
+        this.ESTACIONES = ESTACIONES;
+        this.PUNTAJE = PUNTAJE;
+        this.TIEMPO_RESTANTE = TIEMPO_RESTANTE;
+        this.JUEGO_TERMINADO = JUEGO_TERMINADO;
+        this.RAZON_FIN = RAZON_FIN;
     }
 
     public ArrayList<DatosEstacion> getEstaciones() {
-        return estaciones;
+        return ESTACIONES;
     }
 
     @Override
@@ -40,30 +39,30 @@ public class PaqueteEstado extends PaqueteRed {
     }
 
     public DatosJugador getJugador1() {
-        return jugador1;
+        return this.JUGADOR_1;
     }
 
     public DatosJugador getJugador2() {
-        return jugador2;
+        return this.JUGADOR_2;
     }
 
     public ArrayList<DatosCliente> getClientes() {
-        return clientes;
+        return this.CLIENTES;
     }
 
     public int getPuntaje() {
-        return puntaje;
+        return this.PUNTAJE;
     }
 
     public int getTiempoRestante() {
-        return tiempoRestante;
+        return this.TIEMPO_RESTANTE;
     }
 
     public boolean isJuegoTerminado() {
-        return juegoTerminado;
+        return this.JUEGO_TERMINADO;
     }
 
     public String getRazonFin() {
-        return razonFin;
+        return this.RAZON_FIN;
     }
 }

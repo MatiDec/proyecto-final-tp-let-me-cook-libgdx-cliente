@@ -14,10 +14,6 @@ public class GestorFuentes {
 
     private GestorFuentes() {}
 
-    /*esto de aca es singleton que basicamente es un patron de diseño en el que una clase tiene solo una instancia con un solo punto de acceso global
-    por donde el resto de clases acceden, con eso te evitas que se cree un millon de veces la fuente, lo aprendi de un video de youtube por
-    el quilombo del memory leak que teniamos con las fuentes, el quilombo de esto es que basicamente todas las fuentes son la misma por eso el problema del hover
-    */
     public static GestorFuentes getInstance() {
         if (instancia == null) {
             instancia = new GestorFuentes();
@@ -83,8 +79,6 @@ public class GestorFuentes {
         generadoresCache.clear();
     }
 
-
-    //gracias chatty por haceme acordar que no limpiaba el cache
     public void limpiarCache() {
         for (BitmapFont fuente : fuentesCache.values()) {
             fuente.dispose();

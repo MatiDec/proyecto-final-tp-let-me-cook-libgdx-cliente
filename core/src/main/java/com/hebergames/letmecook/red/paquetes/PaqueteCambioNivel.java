@@ -3,17 +3,17 @@ package com.hebergames.letmecook.red.paquetes;
 import com.hebergames.letmecook.red.PaqueteRed;
 
 public class PaqueteCambioNivel extends PaqueteRed {
-    private int puntajeNivelCompletado;
-    private String rutaNuevoMapa;
-    private String turnoTrabajo;
-    private int numeroNivel;
+    private final int PUNTAJE_NIVEL_COMPLETADO;
+    private final String RUTA_NUEVO_MAPA;
+    private final String TURNO_TRABAJO;
+    private final int NUMERO_NIVEL;
 
-    public PaqueteCambioNivel(int puntajeNivelCompletado, String rutaNuevoMapa,
-                              String turnoTrabajo, int numeroNivel) {
-        this.puntajeNivelCompletado = puntajeNivelCompletado;
-        this.rutaNuevoMapa = rutaNuevoMapa;
-        this.turnoTrabajo = turnoTrabajo;
-        this.numeroNivel = numeroNivel;
+    public PaqueteCambioNivel(int PUNTAJE_NIVEL_COMPLETADO, String RUTA_NUEVO_MAPA,
+                              String TURNO_TRABAJO, int NUMERO_NIVEL) {
+        this.PUNTAJE_NIVEL_COMPLETADO = PUNTAJE_NIVEL_COMPLETADO;
+        this.RUTA_NUEVO_MAPA = RUTA_NUEVO_MAPA;
+        this.TURNO_TRABAJO = TURNO_TRABAJO;
+        this.NUMERO_NIVEL = NUMERO_NIVEL;
     }
 
     @Override
@@ -21,8 +21,7 @@ public class PaqueteCambioNivel extends PaqueteRed {
         return TipoPaquete.CAMBIO_NIVEL;
     }
 
-    public int getPuntajeNivelCompletado() { return puntajeNivelCompletado; }
-    public String getRutaNuevoMapa() { return rutaNuevoMapa; }
-    public String getTurnoTrabajo() { return turnoTrabajo; }
-    public int getNumeroNivel() { return numeroNivel; }
+    public int getPuntajeNivelCompletado() { return this.PUNTAJE_NIVEL_COMPLETADO; }
+
+    public int getNumeroNivel() { return this.NUMERO_NIVEL; }
 }

@@ -116,7 +116,6 @@ public class GestorProductos {
     }
 
     public Producto obtenerProductoPorNombre(String nombreProducto) {
-        // Primero verificar si es una bebida (café o gaseosa)
         if (nombreProducto.toLowerCase().contains("cafe") ||
             nombreProducto.toLowerCase().contains("café")) {
             return crearCafePorNombre(nombreProducto);
@@ -130,7 +129,6 @@ public class GestorProductos {
             return crearGaseosaPorNombre(nombreProducto);
         }
 
-        // Si no es bebida, buscar en recetas
         for (TipoReceta receta : RECETAS_DISPONIBLES) {
             Producto producto = receta.crear().preparar();
             if (producto.getNombre().equalsIgnoreCase(nombreProducto)) {
@@ -138,20 +136,17 @@ public class GestorProductos {
             }
         }
 
-        // Si no se encuentra, crear un producto genérico
         return new ProductoGenerico(nombreProducto, null, CategoriaProducto.INVALIDO);
     }
 
     private Producto crearCafePorNombre(String nombre) {
-        // Extraer tipo y tamaño del nombre
-        // Ejemplo: "Expreso Pequeño" -> tipo="expreso", tamaño=PEQUENO
         String nombreLower = nombre.toLowerCase();
 
         TamanoBebida tamano = TamanoBebida.PEQUENO;
         if (nombreLower.contains("mediano")) tamano = TamanoBebida.MEDIANO;
         else if (nombreLower.contains("grande")) tamano = TamanoBebida.GRANDE;
 
-        String tipo = "expreso"; // por defecto
+        String tipo = "expreso";
         if (nombreLower.contains("americano")) tipo = "americano";
         else if (nombreLower.contains("cortado")) tipo = "cortado";
 
@@ -165,7 +160,7 @@ public class GestorProductos {
         if (nombreLower.contains("mediano")) tamano = TamanoBebida.MEDIANO;
         else if (nombreLower.contains("grande")) tamano = TamanoBebida.GRANDE;
 
-        String tipo = "cocacola"; // por defecto
+        String tipo = "cocacola";
         if (nombreLower.contains("pepsi")) tipo = "pepsi";
         else if (nombreLower.contains("sprite")) tipo = "sprite";
         else if (nombreLower.contains("soda")) tipo = "soda";

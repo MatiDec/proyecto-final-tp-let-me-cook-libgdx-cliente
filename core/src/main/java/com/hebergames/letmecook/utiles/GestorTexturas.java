@@ -32,6 +32,7 @@ public class GestorTexturas {
     private final Map<String, TextureRegion> TEXTURAS_PRODUCTOS;
     private boolean texturasListas = false;
     private TextureRegion texturaIngrediente;
+    private TextureRegion texturaClienteVirtualInactiva;
 
     private GestorTexturas() {
         TEXTURAS_PRODUCTOS = new HashMap<>();
@@ -48,14 +49,13 @@ public class GestorTexturas {
     public void cargarTexturas() {
         if (texturasListas) return;
 
-        // Cargar clientes
         texturaClientes = new Texture(Gdx.files.internal(Recursos.CLIENTES_SPRITESHEET));
         TextureRegion[][] tmpClientes = TextureRegion.split(texturaClientes,
             Recursos.SPRITE_CLIENTE_WIDTH, Recursos.SPRITE_CLIENTE_HEIGHT);
         texturaClientePresencial = tmpClientes[0][0];
         texturaClienteVirtual = tmpClientes[0][1];
+        texturaClienteVirtualInactiva = new TextureRegion(new Texture(Recursos.RUTA_IMAGENES + "texturavirtual.png"));
 
-        // Cargar caras
         texturaCaras = new Texture(Gdx.files.internal(Recursos.CARAS_SPRITESHEET));
         TextureRegion[][] tmpCaras = TextureRegion.split(texturaCaras,
             Recursos.SPRITE_ITEM_WIDTH, Recursos.SPRITE_ITEM_HEIGHT);
@@ -63,7 +63,6 @@ public class GestorTexturas {
         caraImpaciente = tmpCaras[0][1];
         caraEnojada = tmpCaras[0][2];
 
-        // Cargar productos
         try {
             Texture texturaProductos = new Texture(Gdx.files.internal(Recursos.PRODUCTOS_SPRITESHEET));
             TextureRegion[][] tmpProductos = TextureRegion.split(texturaProductos,
@@ -83,7 +82,6 @@ public class GestorTexturas {
             System.err.println("No se pudieron cargar las texturas de productos: " + e.getMessage());
         }
 
-        // Cargar icono de error
         try {
             texturaError = new Texture(Gdx.files.internal(Recursos.ERROR_ICON));
             iconoError = new TextureRegion(texturaError);
@@ -91,7 +89,6 @@ public class GestorTexturas {
             System.err.println("No se pudo cargar icono de error: " + e.getMessage());
         }
 
-        // Cargar bebidas
         try {
             Texture texturaBebidas = new Texture(Gdx.files.internal(Recursos.BEBIDAS_SPRITESHEET));
             TextureRegion[][] tmpBebidas = TextureRegion.split(texturaBebidas,
@@ -118,7 +115,6 @@ public class GestorTexturas {
             System.err.println("No se pudieron cargar las texturas de bebidas: " + e.getMessage());
         }
 
-        // Cargar temporizadores
         try {
             Texture texturaTemporizadores = new Texture(Gdx.files.internal(Recursos.TEMPORIZADORES_SPRITESHEET));
             TextureRegion[][] tmpTemp = TextureRegion.split(texturaTemporizadores,
@@ -279,7 +275,7 @@ public class GestorTexturas {
     }
 
     public TextureRegion getTexturaVirtualInactiva() {
-        return this.texturaClienteVirtual;//esto como no existe todavia le mando lo mismo en ambos getters
+        return this.texturaClienteVirtualInactiva;
     }
 
     public TextureRegion getTexturaVirtualActiva() {

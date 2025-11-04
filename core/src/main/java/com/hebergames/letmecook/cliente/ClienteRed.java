@@ -6,7 +6,7 @@ import java.net.*;
 import java.util.concurrent.*;
 
 public class ClienteRed {
-    private static final int PUERTO_SERVIDOR = 25565;
+    private final int PUERTO_SERVIDOR = 25565;
 
     private DatagramSocket socket;
     private InetAddress direccionServidor;
@@ -20,7 +20,6 @@ public class ClienteRed {
     private boolean jugadorDesconectado;
     private PaqueteCambioNivel paqueteCambioNivel;
 
-    // Campo para almacenar la configuración
     private PaqueteInicioPartida configuracionPartida;
 
     public ClienteRed() {
@@ -71,11 +70,12 @@ public class ClienteRed {
 
     private void recibirEstados() {
         byte[] buffer = new byte[8192];
+        boolean error = false;
 
-        while (conectado) {
+        while (conectado || !error) {
             try {
                 DatagramPacket paquete = new DatagramPacket(buffer, buffer.length);
-                socket.setSoTimeout(2000); // 🔥 Timeout de 2 segundos para no perder paquetes
+                socket.setSoTimeout(2000);
                 socket.receive(paquete);
 
                 PaqueteRed recibido = PaqueteRed.deserializar(paquete.getData());
@@ -86,7 +86,7 @@ public class ClienteRed {
                 } else if (recibido instanceof PaqueteDesconexion) {
                     PaqueteDesconexion desc = (PaqueteDesconexion) recibido;
                     manejarDesconexionRecibida(desc);
-                    return; // 🔥 Cambiar break por return para salir inmediatamente
+                    return;
                 } else if (recibido instanceof PaqueteInicioPartida) {
                     configuracionPartida = (PaqueteInicioPartida) recibido;
                     System.out.println("📦 Configuración de partida recibida");
@@ -95,18 +95,16 @@ public class ClienteRed {
                     System.out.println("📦 Paquete cambio nivel recibido");
                 }
 
-            } catch (SocketTimeoutException e) {
-                // Timeout normal - continuar
             } catch (SocketException e) {
                 if (conectado && ultimoEstado != null) {
                     System.err.println("⚠️ Error de socket: " + e.getMessage());
                 }
-                break; // 🔥 Salir si el socket se cerró
+                error = true;
             } catch (Exception e) {
                 if (conectado) {
                     System.err.println("Error recibiendo estado: " + e.getMessage());
                 }
-                break; // 🔥 Salir en caso de error
+                error = true;
             }
         }
 
@@ -136,13 +134,11 @@ public class ClienteRed {
 
         conectado = false;
 
-        // 🔥 CRÍTICO: Cerrar el socket inmediatamente para liberar el hilo receptor
         if (socket != null && !socket.isClosed()) {
             socket.close();
             System.out.println("✅ Socket cerrado tras recibir desconexión");
         }
 
-        // 🔥 Detener el executor
         if (executor != null && !executor.isShutdown()) {
             executor.shutdownNow();
             System.out.println("✅ Executor detenido tras recibir desconexión");
@@ -150,7 +146,7 @@ public class ClienteRed {
     }
 
     private void enviarPingsAutomaticos() {
-        while (conectado && !socket.isClosed()) { // 🔥 Agregar verificación del socket
+        while (conectado && !socket.isClosed()) {
             try {
                 enviarPaquete(new PaqueteRed() {
                     @Override
@@ -222,23 +218,21 @@ public class ClienteRed {
     }
 
     public void desconectar() {
-        if (!conectado) return; // Ya está desconectado
+        if (!conectado) return;
 
         System.out.println("🔌 Desconectando cliente...");
         conectado = false;
 
-        // 🔥 Enviar paquete de desconexión ANTES de cerrar
         try {
             PaqueteDesconexion paqueteDesc = new PaqueteDesconexion(idJugador, "DESCONEXION_VOLUNTARIA");
             enviarPaquete(paqueteDesc);
-            Thread.sleep(100); // Dar tiempo para que el paquete se envíe
+            Thread.sleep(100);
         } catch (Exception e) {
             System.err.println("Error enviando desconexión: " + e.getMessage());
         }
 
-        // 🔥 Cerrar el executor PRIMERO para detener hilos
         if (executor != null && !executor.isShutdown()) {
-            executor.shutdownNow(); // Forzar cierre inmediato
+            executor.shutdownNow();
             try {
                 if (!executor.awaitTermination(1, java.util.concurrent.TimeUnit.SECONDS)) {
                     System.err.println("⚠️ Executor no terminó a tiempo");
@@ -249,7 +243,6 @@ public class ClienteRed {
             }
         }
 
-        // 🔥 Cerrar el socket DESPUÉS del executor
         if (socket != null && !socket.isClosed()) {
             socket.close();
             System.out.println("✅ Socket cerrado");

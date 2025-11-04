@@ -1,12 +1,13 @@
 package com.hebergames.letmecook.sonido;
 
 import com.hebergames.letmecook.mapa.niveles.TurnoTrabajo;
+import com.hebergames.letmecook.utiles.Recursos;
 
 public enum CancionNivel {
-    MENU("musica_menu", "core/src/main/java/com/hebergames/letmecook/recursos/audio/musica/musicaFondo1.ogg"),
-    TURNO_MANANA("turno_manana", "core/src/main/java/com/hebergames/letmecook/recursos/audio/musica/turnoManiana.ogg"),
-    TURNO_TARDE("turno_tarde", "core/src/main/java/com/hebergames/letmecook/recursos/audio/musica/turnoTarde.ogg"),
-    TURNO_NOCHE("turno_noche", "core/src/main/java/com/hebergames/letmecook/recursos/audio/musica/turnoNoche.ogg");
+    MENU("musica_menu", Recursos.RUTA_AUDIO + "musica/musicaFondo1.ogg"),
+    TURNO_MANANA("turno_manana", Recursos.RUTA_AUDIO + "musica/turnoManiana.ogg"),
+    TURNO_TARDE("turno_tarde", Recursos.RUTA_AUDIO + "musica/turnoTarde.ogg"),
+    TURNO_NOCHE("turno_noche", Recursos.RUTA_AUDIO + "musica/turnoNoche.ogg");
 
     private final String IDENTIFICADOR;
     private final String RUTA;

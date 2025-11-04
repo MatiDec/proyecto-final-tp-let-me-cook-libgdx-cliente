@@ -9,6 +9,7 @@ public class Recursos {
     public static final String RUTA_FUENTES = "core/src/main/java/com/hebergames/letmecook/recursos/fuentes/";
     public static final String RUTA_AUDIO = "core/src/main/java/com/hebergames/letmecook/recursos/audio/";
     public static final String RUTA_MAPAS = "core/src/main/java/com/hebergames/letmecook/recursos/mapas/";
+    public static final String RUTA_TUTORIALES = "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/";
 
     public static final String FONDO = RUTA_IMAGENES + "pruebadeimagen.png";
     public static final String FUENTE_MENU = RUTA_FUENTES + "Chewy-Regular.ttf";

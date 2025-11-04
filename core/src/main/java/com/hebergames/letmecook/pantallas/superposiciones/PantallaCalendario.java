@@ -11,7 +11,6 @@ import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.mapa.niveles.GestorPartida;
 import com.hebergames.letmecook.mapa.niveles.NivelPartida;
 import com.hebergames.letmecook.pantallas.Pantalla;
-import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 
 public class PantallaCalendario extends Pantalla {
     private final SpriteBatch BATCH;
-    private Pantalla pantallaAnterior;
+    private final Pantalla PANTALLA_ANTERIOR;
 
     private final GestorPartida GESTOR_PARTIDA;
     private final Viewport VIEWPORT;
@@ -28,8 +27,8 @@ public class PantallaCalendario extends Pantalla {
     private Texto tituloCalendario;
     private final ArrayList<InfoDiaNivel> DIAS_NIVELES;
 
-    public PantallaCalendario(Pantalla pantallaAnterior) {
-        this.pantallaAnterior = pantallaAnterior;
+    public PantallaCalendario(Pantalla PANTALLA_ANTERIOR) {
+        this.PANTALLA_ANTERIOR = PANTALLA_ANTERIOR;
         this.BATCH = Render.batch;
         this.CAMARA = new OrthographicCamera();
         this.VIEWPORT = new ScreenViewport(CAMARA);

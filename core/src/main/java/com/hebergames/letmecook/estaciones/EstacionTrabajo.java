@@ -84,9 +84,6 @@ public abstract class EstacionTrabajo {
             CajaRegistradora caja = (CajaRegistradora) this;
             if (caja.tomarPedido()) {
                 jugador.salirDeMenu();
-                if (this instanceof EstacionConMenu) {
-                    ((EstacionConMenu) this).alLiberar();
-                }
                 jugadorOcupante = null;
             }
         }
@@ -99,9 +96,6 @@ public abstract class EstacionTrabajo {
                 jugador.sacarDeInventario();
 
                 jugador.salirDeMenu();
-                if (this instanceof EstacionConMenu) {
-                    ((EstacionConMenu) this).alLiberar();
-                }
                 jugadorOcupante = null;
             }
         }

@@ -91,13 +91,13 @@ public class GestorPantallasOverlay {
     }
 
     public boolean isCalendarioMostradoAutomaticamente() {
-        return calendarioMostradoAutomaticamente;
+        return this.calendarioMostradoAutomaticamente;
     }
 
     public boolean isJuegoEnPausa() {
-        return juegoEnPausa;
+        return this.juegoEnPausa;
     }
 
-    public boolean isCalendarioVisible() { return calendarioVisible; }
+    public boolean isCalendarioVisible() { return this.calendarioVisible; }
 
 }

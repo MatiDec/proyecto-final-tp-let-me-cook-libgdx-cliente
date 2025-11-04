@@ -59,29 +59,29 @@ public class PantallaTutorial extends Pantalla {
         // Formato: (título, miniatura, spritesheet, frameWidth, frameHeight, cantidadFrames, fps)
         elementosTutorial.add(new ElementoTutorial(
             "Controles Básicos",
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/miniatura_controles.jpg",
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/spritesheet_controles.jpg",
+            Recursos.RUTA_TUTORIALES + "miniatura_controles.jpg",
+            Recursos.RUTA_TUTORIALES + "spritesheet_controles.jpg",
             128, 64, 12, 10f
         ));
 
         elementosTutorial.add(new ElementoTutorial(
             "Cocinar Recetas",
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/miniatura_recetas.png",
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/spritesheet_recetas.png",
+            Recursos.RUTA_TUTORIALES + "miniatura_recetas.png",
+            Recursos.RUTA_TUTORIALES + "spritesheet_recetas.png",
             64, 64, 16, 12f
         ));
 
         elementosTutorial.add(new ElementoTutorial(
             "Atender Clientes",
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/miniatura_clientes.png",
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/spritesheet_clientes.png",
+            Recursos.RUTA_TUTORIALES + "miniatura_clientes.png",
+            Recursos.RUTA_TUTORIALES + "spritesheet_clientes.png",
             64, 64, 10, 8f
         ));
 
         elementosTutorial.add(new ElementoTutorial(
             "Gestionar Pedidos",
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/miniatura_pedidos.png",
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/spritesheet_pedidos.png",
+            Recursos.RUTA_TUTORIALES + "miniatura_pedidos.png",
+            Recursos.RUTA_TUTORIALES + "spritesheet_pedidos.png",
             64, 64, 14, 10f
         ));
     }
@@ -124,19 +124,13 @@ public class PantallaTutorial extends Pantalla {
 
     private void configurarEntrada() {
         entrada.setCallbackClick((worldX, worldY) -> {
-            System.out.println("Click en PantallaTutorial: " + worldX + ", " + worldY);
-            System.out.println("Área cerrar: " + areaCerrar);
-
             if (areaCerrar.contains(worldX, worldY)) {
-                System.out.println("Cerrando tutorial principal");
                 cambiarPantalla(new PantallaMenu());
                 return;
             }
 
-            for (int i = 0; i < elementosTutorial.size(); i++) {
-                ElementoTutorial elemento = elementosTutorial.get(i);
+            for (ElementoTutorial elemento : elementosTutorial) {
                 if (elemento.fueClickeado(worldX, worldY)) {
-                    System.out.println("Click en elemento tutorial " + i);
                     cambiarPantalla(new PantallaDetalleTutorial(elemento, this));
                     return;
                 }
@@ -163,11 +157,7 @@ public class PantallaTutorial extends Pantalla {
 
         titulo.dibujar();
 
-        float mouseX = Gdx.input.getX();
-        float mouseY = viewport.getWorldHeight() - Gdx.input.getY();
-
         for (ElementoTutorial elemento : elementosTutorial) {
-            elemento.actualizarHover(mouseX, mouseY);
             elemento.dibujar(batch);
         }
 

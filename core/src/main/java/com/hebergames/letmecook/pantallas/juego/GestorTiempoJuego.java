@@ -17,8 +17,8 @@ public class GestorTiempoJuego {
         return hiloPrincipal.getSegundos() >= tiempoObjetivo;
     }
 
-    public int getSegundos() {
-        return hiloPrincipal.getSegundos();
+    public void detener() {
+        hiloPrincipal.detener();
     }
 
     public String getTiempoFormateado() {
@@ -28,7 +28,7 @@ public class GestorTiempoJuego {
         return String.format("%02d:%02d", minutos, segundosRestantes);
     }
 
-    public void detener() {
-        hiloPrincipal.detener();
+    public int getSegundos() {
+        return hiloPrincipal.getSegundos();
     }
 }

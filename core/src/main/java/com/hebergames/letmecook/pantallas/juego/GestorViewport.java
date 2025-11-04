@@ -2,7 +2,6 @@ package com.hebergames.letmecook.pantallas.juego;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -10,12 +9,12 @@ import com.hebergames.letmecook.entidades.Jugador;
 
 public class GestorViewport {
 
-    private static final float MUNDO_ANCHO = 1920f;
-    private static final float MUNDO_ALTO = 1080f;
-    private static final float MAX_DISTANCIA_PARA_ZOOM = 1500f;
-    private static final float MIN_ZOOM = 1.0f;
-    private static final float MID_ZOOM = 1.2f;
-    private static final float MAX_ZOOM = 1.5f;
+    private final float MUNDO_ANCHO = 1920f;
+    private final float MUNDO_ALTO = 1080f;
+    private final float MAX_DISTANCIA_PARA_ZOOM = 1500f;
+    private final float MIN_ZOOM = 1.0f;
+    private final float MID_ZOOM = 1.2f;
+    private final float MAX_ZOOM = 1.5f;
 
     private final Viewport viewportJuego;
     private final Viewport viewportUI;
@@ -66,31 +65,19 @@ public class GestorViewport {
         viewportUI.update(width, height, true);
     }
 
-    public Vector2 convertirCoordenadasJuego(int screenX, int screenY) {
-        Vector2 coordenadas = new Vector2(screenX, screenY);
-        viewportJuego.unproject(coordenadas);
-        return coordenadas;
-    }
-
-    public Vector2 convertirCoordenadasUI(int screenX, int screenY) {
-        Vector2 coordenadas = new Vector2(screenX, screenY);
-        viewportUI.unproject(coordenadas);
-        return coordenadas;
-    }
-
     public Viewport getViewportJuego() {
-        return viewportJuego;
+        return this.viewportJuego;
     }
 
     public Viewport getViewportUI() {
-        return viewportUI;
+        return this.viewportUI;
     }
 
     public OrthographicCamera getCamaraJuego() {
-        return camaraJuego;
+        return this.camaraJuego;
     }
 
     public OrthographicCamera getCamaraUI() {
-        return camaraUI;
+        return this.camaraUI;
     }
 }

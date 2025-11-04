@@ -8,7 +8,7 @@ public class ResultadoEntrega {
     }
 
     public int getPuntos() {
-        return PUNTOS;
+        return this.PUNTOS;
     }
 
 }

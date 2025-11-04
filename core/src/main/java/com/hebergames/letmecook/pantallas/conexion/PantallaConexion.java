@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.pantallas;
+package com.hebergames.letmecook.pantallas.conexion;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hebergames.letmecook.cliente.ClienteRed;
 import com.hebergames.letmecook.elementos.Texto;
+import com.hebergames.letmecook.pantallas.Pantalla;
+import com.hebergames.letmecook.pantallas.PantallaMenu;
 import com.hebergames.letmecook.utiles.Render;
 import com.hebergames.letmecook.utiles.Recursos;
 
@@ -18,7 +20,7 @@ public class PantallaConexion extends Pantalla {
     private Texto textoEstado;
     private Texto textoInstrucciones;
     private SpriteBatch batch;
-    private StringBuilder inputIP;
+    private final StringBuilder IP_ESCRITA;
     private boolean intentandoConectar;
 
     private boolean mostrandoError = false;
@@ -27,7 +29,7 @@ public class PantallaConexion extends Pantalla {
     private static final float TIEMPO_MOSTRAR_ERROR = 5f;
 
     public PantallaConexion() {
-        inputIP = new StringBuilder("192.168.0.202");
+        IP_ESCRITA = new StringBuilder("192.168.0.202");
         intentandoConectar = false;
     }
 
@@ -35,22 +37,38 @@ public class PantallaConexion extends Pantalla {
     public void show() {
         batch = Render.batch;
 
+        float anchoPantalla = Gdx.graphics.getWidth();
+        float altoPantalla = Gdx.graphics.getHeight();
+
         textoTitulo = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, false);
         textoTitulo.setTexto("MULTIJUGADOR ONLINE");
-        textoTitulo.setPosition(1280/2f, 900);//esto esta re hardcodeado, dsp hacerlo bien
+        textoTitulo.setPosition(
+            anchoPantalla / 2f - textoTitulo.getAncho() / 2f,
+            altoPantalla * 0.85f
+        );
 
         textoInstrucciones = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, false);
         textoInstrucciones.setTexto("Ingresa la IP del servidor y presiona ENTER");
-        textoInstrucciones.setPosition(1280/2f, 700);
+        textoInstrucciones.setPosition(
+            anchoPantalla / 2f - textoInstrucciones.getAncho() / 2f,
+            altoPantalla * 0.65f
+        );
 
         textoIP = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, false);
         actualizarTextoIP();
-        textoIP.setPosition(1280/2f, 540);
+        textoIP.setPosition(
+            anchoPantalla / 2f - textoIP.getAncho() / 2f,
+            altoPantalla * 0.50f
+        );
 
         textoEstado = new Texto(Recursos.FUENTE_MENU, 28, Color.WHITE, false);
         textoEstado.setTexto("");
-        textoEstado.setPosition(1280/2f, 400);
+        textoEstado.setPosition(
+            anchoPantalla / 2f - textoEstado.getAncho() / 2f,
+            altoPantalla * 0.35f
+        );
     }
+
 
     @Override
     public void render(float delta) {
@@ -59,28 +77,29 @@ public class PantallaConexion extends Pantalla {
 
         manejarInput();
 
-        // 🔍 Verificar desconexión con mensajes específicos
         if (cliente != null && !cliente.isConectado()) {
             if (cliente.isServidorCerrado()) {
                 mostrarError("El servidor se cerró inesperadamente");
             } else if (cliente.isJugadorDesconectado()) {
                 String razon = cliente.getRazonDesconexion();
 
-                // Mensajes personalizados según el tipo de desconexión
-                if (razon.equals("FIN_PARTIDA")) {
-                    mostrarError("Partida finalizada");
-                } else if (razon.equals("JUGADOR_ABANDONO")) {
-                    mostrarError("El otro jugador abandonó la partida");
-                } else if (razon.equals("DESCONEXION_VOLUNTARIA")) {
-                    // 🔥 No mostrar error si fue desconexión propia
-                    limpiarError();
-                } else {
-                    mostrarError(razon);
+                switch (razon) {
+                    case "FIN_PARTIDA":
+                        mostrarError("Partida finalizada");
+                        break;
+                    case "JUGADOR_ABANDONO":
+                        mostrarError("El otro jugador abandonó la partida");
+                        break;
+                    case "DESCONEXION_VOLUNTARIA":
+                        limpiarError();
+                        break;
+                    default:
+                        mostrarError(razon);
+                        break;
                 }
             }
         }
 
-        // Actualizar temporizador de error
         if (mostrandoError) {
             tiempoError += delta;
             if (tiempoError >= TIEMPO_MOSTRAR_ERROR) {
@@ -88,12 +107,10 @@ public class PantallaConexion extends Pantalla {
             }
         }
 
-        // Si hay cliente y está esperando jugadores
         if (cliente != null && cliente.isEsperandoJugadores()) {
             textoEstado.setTexto("Esperando a otro jugador...");
         }
 
-        // Si el juego ya empezó
         if (cliente != null && !cliente.isEsperandoJugadores() &&
             cliente.getUltimoEstado() != null) {
             Pantalla.cambiarPantalla(new PantallaJuegoOnline(cliente));
@@ -115,7 +132,6 @@ public class PantallaConexion extends Pantalla {
         textoEstado.setTexto("ERROR: " + mensaje);
         textoEstado.getFuente().setColor(Color.RED);
 
-        // Limpiar cliente
         if (cliente != null) {
             cliente.desconectar();
             cliente = null;
@@ -133,11 +149,10 @@ public class PantallaConexion extends Pantalla {
     private void manejarInput() {
         if (intentandoConectar) return;
 
-        // Capturar números y puntos
         for (int i = Input.Keys.NUM_0; i <= Input.Keys.NUM_9; i++) {
             if (Gdx.input.isKeyJustPressed(i)) {
-                if (inputIP.length() < 15) {
-                    inputIP.append(i - Input.Keys.NUM_0);
+                if (IP_ESCRITA.length() < 15) {
+                    IP_ESCRITA.append(i - Input.Keys.NUM_0);
                     actualizarTextoIP();
                 }
             }
@@ -145,15 +160,15 @@ public class PantallaConexion extends Pantalla {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD) ||
             Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_DOT)) {
-            if (inputIP.length() < 15) {
-                inputIP.append(".");
+            if (IP_ESCRITA.length() < 15) {
+                IP_ESCRITA.append(".");
                 actualizarTextoIP();
             }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-            if (inputIP.length() > 0) {
-                inputIP.deleteCharAt(inputIP.length() - 1);
+            if (IP_ESCRITA.length() > 0) {
+                IP_ESCRITA.deleteCharAt(IP_ESCRITA.length() - 1);
                 actualizarTextoIP();
             }
         }
@@ -171,7 +186,7 @@ public class PantallaConexion extends Pantalla {
     private void intentarConexion() {
         intentandoConectar = true;
         textoEstado.setTexto("Conectando...");
-        ipServidor = inputIP.toString();
+        ipServidor = IP_ESCRITA.toString();
 
         new Thread(() -> {
             cliente = new ClienteRed();
@@ -190,7 +205,7 @@ public class PantallaConexion extends Pantalla {
     }
 
     private void actualizarTextoIP() {
-        textoIP.setTexto("IP: " + inputIP.toString() + "_");
+        textoIP.setTexto("IP: " + IP_ESCRITA + "_");
     }
 
     @Override
@@ -207,15 +222,11 @@ public class PantallaConexion extends Pantalla {
 
     @Override
     public void dispose() {
-        System.out.println("🧹 Limpiando PantallaConexion...");
-
         if (cliente != null) {
             if (cliente.isConectado()) {
                 cliente.desconectar();
             }
             cliente = null;
         }
-
-        System.out.println("✅ PantallaConexion limpiada");
     }
 }

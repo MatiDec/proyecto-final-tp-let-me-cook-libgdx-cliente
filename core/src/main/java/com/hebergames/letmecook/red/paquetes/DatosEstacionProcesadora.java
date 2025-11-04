@@ -9,8 +9,8 @@ public class DatosEstacionProcesadora implements Serializable {
     public boolean procesando;
     public String nombreIngrediente;
     public String estadoIndicador;
-    public ArrayList<String> objetosEnEstacion; // 👈 NUEVO - Para mesas
-    public boolean tieneJugador; // 👈 NUEVO
+    public ArrayList<String> objetosEnEstacion;
+    public boolean tieneJugador;
 
     public DatosEstacionProcesadora(int index, boolean procesando,
                                     String nombreIngrediente, String estadoIndicador) {

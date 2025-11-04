@@ -7,12 +7,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.hebergames.letmecook.cliente.ClienteRed;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.eventos.entrada.Entrada;
 import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
 import com.hebergames.letmecook.pantallas.Pantalla;
-import com.hebergames.letmecook.pantallas.PantallaJuegoOnline;
+import com.hebergames.letmecook.pantallas.conexion.PantallaJuegoOnline;
 import com.hebergames.letmecook.pantallas.PantallaMenu;
 import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
 import com.hebergames.letmecook.pantallas.opciones.ControlVolumen;
@@ -24,7 +23,7 @@ import com.hebergames.letmecook.utiles.Render;
 public class PantallaPausa extends Pantalla {
 
     private final SpriteBatch BATCH;
-    private final Pantalla pantallaAnterior;
+    private final Pantalla PANTALLA_ANTERIOR;
 
     private Texto oContinuar, oMenuPrincipal;
     private Texto tPantallaCompleta, tAplicar;
@@ -35,8 +34,8 @@ public class PantallaPausa extends Pantalla {
     private final Viewport VIEWPORT;
     private final OrthographicCamera CAMARA;
 
-    public PantallaPausa(Pantalla pantallaAnterior) {
-        this.pantallaAnterior = pantallaAnterior;
+    public PantallaPausa(Pantalla PANTALLA_ANTERIOR) {
+        this.PANTALLA_ANTERIOR = PANTALLA_ANTERIOR;
         this.BATCH = Render.batch;
         this.CAMARA = new OrthographicCamera();
         this.VIEWPORT = new ScreenViewport(CAMARA);
@@ -82,18 +81,18 @@ public class PantallaPausa extends Pantalla {
 
     private void registrarEntradas() {
         entrada.registrar(new TextoInteractuable(oContinuar, () -> {
-            if (pantallaAnterior instanceof PantallaJuego) {
-                ((PantallaJuego) pantallaAnterior).reanudarJuego();
-            } else if (pantallaAnterior instanceof PantallaJuegoOnline) {
-                ((PantallaJuegoOnline)pantallaAnterior).reanudarJuego();
+            if (PANTALLA_ANTERIOR instanceof PantallaJuego) {
+                ((PantallaJuego) PANTALLA_ANTERIOR).reanudarJuego();
+            } else if (PANTALLA_ANTERIOR instanceof PantallaJuegoOnline) {
+                ((PantallaJuegoOnline) PANTALLA_ANTERIOR).reanudarJuego();
             }
         }));
 
         entrada.registrar(new TextoInteractuable(oMenuPrincipal, () -> {
-            if (pantallaAnterior instanceof  PantallaJuego) {
-                ((PantallaJuego) pantallaAnterior).detenerHilos();
-            } else if (pantallaAnterior instanceof PantallaJuegoOnline) {
-                pantallaAnterior.dispose();
+            if (PANTALLA_ANTERIOR instanceof  PantallaJuego) {
+                ((PantallaJuego) PANTALLA_ANTERIOR).detenerHilos();
+            } else if (PANTALLA_ANTERIOR instanceof PantallaJuegoOnline) {
+                PANTALLA_ANTERIOR.dispose();
             }
             cambiarPantalla(new PantallaMenu());
         }));

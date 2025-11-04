@@ -14,11 +14,11 @@ import java.util.ArrayList;
 public class GestorUIJuego {
 
     private final ArrayList<ObjetoVisualizable> objetosUI;
-    private final Texto textoContador;
-    private final Texto textoInventario1;
-    private final Texto textoInventario2;
+    private final Texto TEXTO_CONTADOR;
+    private final Texto TEXTO_INVENTARIO_1;
+    private final Texto TEXTO_INVENTARIO_2;
 
-    private static final float MARGEN = 50f;
+    private final float MARGEN = 50f;
     private final ArrayList<Texto> TEXTOS_PEDIDOS;
     private final ArrayList<TarjetaPedido> TARJETAS_PEDIDOS;
 
@@ -29,14 +29,14 @@ public class GestorUIJuego {
     public GestorUIJuego() {
         objetosUI = new ArrayList<>();
 
-        textoContador = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
-        textoContador.setTexto("00:00");
+        TEXTO_CONTADOR = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
+        TEXTO_CONTADOR.setTexto("00:00");
 
-        textoInventario1 = new Texto(Recursos.FUENTE_MENU, 32, Color.GREEN, true);
-        textoInventario1.setTexto("J1 Inventario: Vacío");
+        TEXTO_INVENTARIO_1 = new Texto(Recursos.FUENTE_MENU, 32, Color.GREEN, true);
+        TEXTO_INVENTARIO_1.setTexto("J1 Inventario: Vacío");
 
-        textoInventario2 = new Texto(Recursos.FUENTE_MENU, 32, Color.BLUE, true);
-        textoInventario2.setTexto("J2 Inventario: Vacío");
+        TEXTO_INVENTARIO_2 = new Texto(Recursos.FUENTE_MENU, 32, Color.BLUE, true);
+        TEXTO_INVENTARIO_2.setTexto("J2 Inventario: Vacío");
 
         TEXTO_PUNTAJE = new Texto(Recursos.FUENTE_MENU, 32, Color.YELLOW, true);
         TEXTO_PUNTAJE.setTexto("Puntos: 0");
@@ -50,9 +50,9 @@ public class GestorUIJuego {
 
         TARJETAS_PEDIDOS = new ArrayList<>();
 
-        objetosUI.add(textoContador);
-        objetosUI.add(textoInventario1);
-        objetosUI.add(textoInventario2);
+        objetosUI.add(TEXTO_CONTADOR);
+        objetosUI.add(TEXTO_INVENTARIO_1);
+        objetosUI.add(TEXTO_INVENTARIO_2);
 
         actualizarPosiciones(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
@@ -75,7 +75,7 @@ public class GestorUIJuego {
         int minutos = segundos / 60;
         int segundosRestantes = segundos % 60;
         String tiempoFormateado = String.format("%02d:%02d", minutos, segundosRestantes);
-        textoContador.setTexto(tiempoFormateado);
+        TEXTO_CONTADOR.setTexto(tiempoFormateado);
     }
 
     public void actualizarPuntaje(int puntos) {
@@ -84,10 +84,10 @@ public class GestorUIJuego {
 
     public void actualizarInventario(String nombreItem1, String nombreItem2) {
         if (nombreItem1 != null) {
-            textoInventario1.setTexto("J1 Inventario: " + nombreItem1);
+            TEXTO_INVENTARIO_1.setTexto("J1 Inventario: " + nombreItem1);
         }
         if (nombreItem2 != null) {
-            textoInventario2.setTexto("J2 Inventario: " + nombreItem2);
+            TEXTO_INVENTARIO_2.setTexto("J2 Inventario: " + nombreItem2);
         }
 
     }
@@ -117,9 +117,9 @@ public class GestorUIJuego {
     }
 
     public void actualizarPosiciones(float anchoUI, float altoUI) {
-        textoContador.setPosition(anchoUI / 2f - textoContador.getAncho() / 2f, altoUI - MARGEN);
-        textoInventario1.setPosition(MARGEN, altoUI - MARGEN);
-        textoInventario2.setPosition(anchoUI - textoInventario2.getAncho() - MARGEN, altoUI - MARGEN);
+        TEXTO_CONTADOR.setPosition(anchoUI / 2f - TEXTO_CONTADOR.getAncho() / 2f, altoUI - MARGEN);
+        TEXTO_INVENTARIO_1.setPosition(MARGEN, altoUI - MARGEN);
+        TEXTO_INVENTARIO_2.setPosition(anchoUI - TEXTO_INVENTARIO_2.getAncho() - MARGEN, altoUI - MARGEN);
         TEXTO_PUNTAJE.setPosition(MARGEN, altoUI - MARGEN * 2);
 
         float margenPedidos = 100f;

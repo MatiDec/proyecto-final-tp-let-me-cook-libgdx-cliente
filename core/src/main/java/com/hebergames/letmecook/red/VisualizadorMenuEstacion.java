@@ -12,41 +12,37 @@ import com.hebergames.letmecook.utiles.Recursos;
 import java.util.ArrayList;
 
 public class VisualizadorMenuEstacion {
-    private final ArrayList<Texto> textosMenu = new ArrayList<>();
-    private final ArrayList<Texto> poolTextos = new ArrayList<>(); // pool reutilizable
+    private final ArrayList<Texto> TEXTOS_MENU = new ArrayList<>();
+    private final ArrayList<Texto> POOL_TEXTOS = new ArrayList<>();
     private Texto textoTitulo;
     private boolean visible;
     private boolean esJugador1;
     private String tipoEstacion;
 
-    private static final int TAMANIO_POOL_INICIAL = 15;
+    private final int TAMANIO_POOL_INICIAL = 15;
 
     public VisualizadorMenuEstacion() {
-        // Crear un pequeño pool inicial de textos
         for (int i = 0; i < TAMANIO_POOL_INICIAL; i++) {
-            poolTextos.add(new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true));
+            POOL_TEXTOS.add(new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true));
         }
         visible = false;
     }
 
-    /** Obtiene un Texto disponible del pool (reutiliza o crea si no hay) */
     private Texto obtenerTextoLibre() {
-        if (!poolTextos.isEmpty()) {
-            return poolTextos.remove(poolTextos.size() - 1);
+        if (!POOL_TEXTOS.isEmpty()) {
+            return POOL_TEXTOS.remove(POOL_TEXTOS.size() - 1);
         }
-        // Si se necesitan más, se crean solo cuando sea necesario
         return new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
     }
 
-    /** Devuelve un texto al pool */
     private void liberarTexto(Texto texto) {
         texto.setTexto("");
-        poolTextos.add(texto);
+        POOL_TEXTOS.add(texto);
     }
 
     private void limpiarTextos() {
-        for (Texto t : textosMenu) liberarTexto(t);
-        textosMenu.clear();
+        for (Texto t : TEXTOS_MENU) liberarTexto(t);
+        TEXTOS_MENU.clear();
     }
 
     public void mostrarMenuHeladera(boolean esJugador1) {
@@ -63,7 +59,7 @@ public class VisualizadorMenuEstacion {
             if (numero > 9) break;
             Texto texto = obtenerTextoLibre();
             texto.setTexto(numero + ". " + tipo.getNombre());
-            textosMenu.add(texto);
+            TEXTOS_MENU.add(texto);
             numero++;
         }
     }
@@ -81,30 +77,28 @@ public class VisualizadorMenuEstacion {
             Texto t = obtenerTextoLibre();
             String contenido = i < objetosEnMesa.size() ? objetosEnMesa.get(i) : "Vacío";
             t.setTexto((i + 1) + ". Slot " + (i + 1) + " [" + contenido + "]");
-            textosMenu.add(t);
+            TEXTOS_MENU.add(t);
         }
 
         Texto crear = obtenerTextoLibre();
         crear.setTexto("3. Crear Producto");
-        textosMenu.add(crear);
+        TEXTOS_MENU.add(crear);
 
         Texto retirar = obtenerTextoLibre();
         retirar.setTexto("4. Retirar Producto");
-        textosMenu.add(retirar);
+        TEXTOS_MENU.add(retirar);
     }
 
     public void mostrarMenuCafetera(boolean esJugador1, String estadoActual, float progreso) {
         this.esJugador1 = esJugador1;
         this.tipoEstacion = "Cafetera";
-        this.visible = true; // 👈 Asegurarse que está visible
+        this.visible = true;
 
-        // Si el menú ya está visible y estamos en PREPARANDO, solo actualizamos el título
-        if ("PREPARANDO".equals(estadoActual) && textoTitulo != null && textosMenu.isEmpty()) {
+        if ("PREPARANDO".equals(estadoActual) && textoTitulo != null && TEXTOS_MENU.isEmpty()) {
             textoTitulo.setTexto(String.format("Preparando... %.0f%%", progreso * 100f));
             return;
         }
 
-        // Si no, reconstruimos el menú (caso inicial o cambio de estado)
         limpiarTextos();
 
         textoTitulo = obtenerTextoLibre();
@@ -132,15 +126,13 @@ public class VisualizadorMenuEstacion {
     public void mostrarMenuFuente(boolean esJugador1, String estadoActual, float progreso) {
         this.esJugador1 = esJugador1;
         this.tipoEstacion = "Fuente";
-        this.visible = true; // 👈 Asegurarse que está visible
+        this.visible = true;
 
-        // Si el menú ya está visible y estamos en PREPARANDO, solo actualizamos el título
-        if ("PREPARANDO".equals(estadoActual) && textoTitulo != null && textosMenu.isEmpty()) {
+        if ("PREPARANDO".equals(estadoActual) && textoTitulo != null && TEXTOS_MENU.isEmpty()) {
             textoTitulo.setTexto(String.format("Sirviendo... %.0f%%", progreso * 100f));
             return;
         }
 
-        // Si no, reconstruimos el menú (caso inicial o cambio de estado)
         limpiarTextos();
 
         textoTitulo = obtenerTextoLibre();
@@ -189,14 +181,14 @@ public class VisualizadorMenuEstacion {
         }
 
         texto.setTexto(textoOpcion);
-        textosMenu.add(texto);
+        TEXTOS_MENU.add(texto);
     }
 
     private void agregarOpciones(String[] opciones) {
         for (int i = 0; i < opciones.length; i++) {
             Texto t = obtenerTextoLibre();
             t.setTexto((i + 1) + ". " + opciones[i]);
-            textosMenu.add(t);
+            TEXTOS_MENU.add(t);
         }
     }
 
@@ -216,19 +208,18 @@ public class VisualizadorMenuEstacion {
         float anchoMenu = 400f;
         float x = esJugador1 ? margen : anchoUI - anchoMenu - margen;
 
-        // 👇 Calcular altura inicial basada en cantidad de elementos
         float espaciado = 40f;
-        float alturaTotal = (textosMenu.size() + 1) * espaciado; // +1 por el título
+        float alturaTotal = (TEXTOS_MENU.size() + 1) * espaciado;
         float yInicial = (altoUI / 2f) + (alturaTotal / 2f);
 
         if (textoTitulo != null) {
             textoTitulo.setPosition(x, yInicial);
             textoTitulo.dibujarEnUi(batch);
-            yInicial -= espaciado * 1.5f; // Separación extra después del título
+            yInicial -= espaciado * 1.5f;
         }
 
         float y = yInicial;
-        for (Texto t : textosMenu) {
+        for (Texto t : TEXTOS_MENU) {
             t.setPosition(x, y);
             t.dibujarEnUi(batch);
             y -= espaciado;

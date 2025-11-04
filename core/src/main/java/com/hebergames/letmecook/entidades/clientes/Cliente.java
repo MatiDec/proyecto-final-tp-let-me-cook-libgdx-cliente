@@ -119,11 +119,6 @@ public class Cliente {
         this.tiempoEspera = 0f;
     }
 
-    public void actualizarDesdeServidor(float porcentajeTolerancia, float tiempoRestante) {
-        // Calcular tiempo transcurrido basado en porcentaje
-        this.tiempoEspera = TIEMPO_MAXIMO_ESPERA * (1f - porcentajeTolerancia);
-    }
-
     public TipoCliente getTipo() {
         return this.TIPO_CLIENTE;
     }

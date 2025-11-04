@@ -89,7 +89,7 @@ public class GestorEntradaJuego {
     }
 
     public Entrada getEntrada() {
-        return entrada;
+        return this.entrada;
     }
 
 }

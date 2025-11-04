@@ -93,14 +93,14 @@ public class ControlVolumen {
     }
 
     public int getVolumen() {
-        return volumenActual;
+        return this.volumenActual;
     }
 
     public Texto getTextoFlechaIzq() {
-        return TEXTO_FLECHA_IZQ;
+        return this.TEXTO_FLECHA_IZQ;
     }
 
     public Texto getTextoFlechaDer() {
-        return TEXTO_FLECHA_DER;
+        return this.TEXTO_FLECHA_DER;
     }
 }

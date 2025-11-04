@@ -52,7 +52,6 @@ public class Jugador {
 
     protected GestorAnimacion gestorAnimacion;
     private String objetoEnMano = "vacio";
-    private boolean estaMoviendose = false;
     private boolean forzarAnimacionMovimiento = false;
 
     public Jugador(float x, float y, GestorAnimacion gestorAnimacion) {
@@ -69,9 +68,6 @@ public class Jugador {
         if (animacion != null) {
             frameActual = animacion.getKeyFrame(estadoTiempo, true);
         }
-
-        // ✅ Permitir animación si hay velocidad O si está forzada (modo online)
-        boolean debeAnimarse = !velocidad.isZero(0.01f) || forzarAnimacionMovimiento;
 
         if (velocidad.isZero(0.01f) && !estaDeslizando && !forzarAnimacionMovimiento) {
             if (animacion != null) frameActual = animacion.getKeyFrame(0, true);
@@ -146,11 +142,9 @@ public class Jugador {
 
     public void dibujar(SpriteBatch batch) {
         if (frameActual == null) {
-            // Si no hay frame, intentar obtener uno de la animación
             if (animacion != null) {
                 frameActual = animacion.getKeyFrame(0, true);
             }
-            // Si sigue siendo null, no dibujar
             if (frameActual == null) return;
         }
 
@@ -197,12 +191,6 @@ public class Jugador {
         }
     }
 
-    private void reproducirSonidoColision() {
-        // Distorsión: pitch aleatorio entre 0.8 y 1.2
-        float pitch = 0.8f + (float)Math.random() * 0.4f;
-        GestorAudio.getInstance().reproducirSonido(SonidoJuego.COLISION_JUGADORES);
-    }
-
     private boolean colisiona(Rectangle rect) {
 
         for (Rectangle obstaculo : colisionables) {
@@ -213,9 +201,8 @@ public class Jugador {
 
         for (Jugador otro : otrosJugadores) {
             if (otro != this && otro.getHITBOX().overlaps(rect)) {
-                // Solo reproducir sonido si no se ha reproducido recientemente
                 if (!colisionReciente) {
-                    reproducirSonidoColision();
+                    GestorAudio.getInstance().reproducirSonido(SonidoJuego.COLISION_JUGADORES);
                     colisionReciente = true;
                     tiempoColisionReset = 0f;
                 }
@@ -344,10 +331,6 @@ public class Jugador {
         return estacionActual;
     }
 
-    public boolean esJugador1() {
-        return true;
-    }
-
     public ObjetoAlmacenable getInventario() {
         return this.inventario;
     }
@@ -388,16 +371,5 @@ public class Jugador {
         if (!moviendose) {
             estadoTiempo = 0;
         }
-    }
-
-    public float getAnguloRotacion() {
-        return this.anguloRotacion;
-    }
-
-    public Vector2 getVelocidad() {
-        return this.velocidad;
-    }
-    public boolean estaMoviendose() {
-        return this.estaMoviendose;
     }
 }

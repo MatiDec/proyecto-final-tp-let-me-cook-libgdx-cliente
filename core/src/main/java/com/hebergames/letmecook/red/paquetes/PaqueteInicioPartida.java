@@ -4,10 +4,10 @@ import com.hebergames.letmecook.red.PaqueteRed;
 import java.util.ArrayList;
 
 public class PaqueteInicioPartida extends PaqueteRed {
-    private ArrayList<String> niveles;
+    private final ArrayList<String> NIVELES;
 
-    public PaqueteInicioPartida(ArrayList<String> niveles) {
-        this.niveles = niveles;
+    public PaqueteInicioPartida(ArrayList<String> NIVELES) {
+        this.NIVELES = NIVELES;
     }
 
     @Override
@@ -16,6 +16,6 @@ public class PaqueteInicioPartida extends PaqueteRed {
     }
 
     public ArrayList<String> getNiveles() {
-        return this.niveles;
+        return this.NIVELES;
     }
 }

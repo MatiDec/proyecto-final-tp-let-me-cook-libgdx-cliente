@@ -14,8 +14,8 @@ import com.hebergames.letmecook.utiles.Recursos;
 import java.util.ArrayList;
 
 public class TarjetaPedido {
-    private static Texto TEXTO_TIEMPO_COMPARTIDO;
-    private static ShapeRenderer SHAPE_RENDERER_COMPARTIDO;
+    private final Texto TEXTO_TIEMPO_COMPARTIDO;
+    private final ShapeRenderer SHAPE_RENDERER;
 
     private final float ANCHO_TARJETA = 200f;
     private final float ALTO_TARJETA = 100f;
@@ -23,13 +23,9 @@ public class TarjetaPedido {
     private final float PADDING = 10f;
 
     public TarjetaPedido() {
-        if (SHAPE_RENDERER_COMPARTIDO == null) {
-            SHAPE_RENDERER_COMPARTIDO = new ShapeRenderer();
-        }
+        SHAPE_RENDERER = new ShapeRenderer();
 
-        if (TEXTO_TIEMPO_COMPARTIDO == null) {
-            TEXTO_TIEMPO_COMPARTIDO = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
-        }
+        TEXTO_TIEMPO_COMPARTIDO = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
     }
 
     public void dibujar(SpriteBatch batch, Cliente cliente, float x, float y,
@@ -43,17 +39,17 @@ public class TarjetaPedido {
 
         batch.end();
 
-        SHAPE_RENDERER_COMPARTIDO.setProjectionMatrix(batch.getProjectionMatrix());
-        SHAPE_RENDERER_COMPARTIDO.begin(ShapeRenderer.ShapeType.Filled);
+        SHAPE_RENDERER.setProjectionMatrix(batch.getProjectionMatrix());
+        SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Filled);
 
-        SHAPE_RENDERER_COMPARTIDO.setColor(0.2f, 0.2f, 0.2f, 0.8f);
-        SHAPE_RENDERER_COMPARTIDO.rect(x, y, ANCHO_TARJETA, ALTO_TARJETA);
+        SHAPE_RENDERER.setColor(0.2f, 0.2f, 0.2f, 0.8f);
+        SHAPE_RENDERER.rect(x, y, ANCHO_TARJETA, ALTO_TARJETA);
 
         Color colorBarra = getColorPorcentaje(porcentajeTolerancia);
-        SHAPE_RENDERER_COMPARTIDO.setColor(colorBarra);
-        SHAPE_RENDERER_COMPARTIDO.rect(x, y, ANCHO_TARJETA * porcentajeTolerancia, 5f);
+        SHAPE_RENDERER.setColor(colorBarra);
+        SHAPE_RENDERER.rect(x, y, ANCHO_TARJETA * porcentajeTolerancia, 5f);
 
-        SHAPE_RENDERER_COMPARTIDO.end();
+        SHAPE_RENDERER.end();
 
         batch.begin();
 
@@ -121,14 +117,7 @@ public class TarjetaPedido {
         }
     }
 
-    public static void disposeStatic() {
-        if (SHAPE_RENDERER_COMPARTIDO != null) {
-            SHAPE_RENDERER_COMPARTIDO.dispose();
-            SHAPE_RENDERER_COMPARTIDO = null;
-        }
-        TEXTO_TIEMPO_COMPARTIDO = null;
-    }
-
     public void dispose() {
+        this.SHAPE_RENDERER.dispose();
     }
 }

@@ -17,6 +17,7 @@ import com.hebergames.letmecook.utiles.GestorJugadores;
 import com.hebergames.letmecook.utiles.Recursos;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Mesa extends EstacionConMenu {
@@ -103,9 +104,7 @@ public class Mesa extends EstacionConMenu {
 
         productoPreparado = receta.preparar();
 
-        for (int i = 0; i < SLOTS.length; i++) {
-            SLOTS[i] = null;
-        }
+        Arrays.fill(SLOTS, null);
     }
 
     private void retirarProducto() {

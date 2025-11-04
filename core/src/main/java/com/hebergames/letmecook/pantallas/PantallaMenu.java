@@ -11,6 +11,7 @@ import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.eventos.entrada.Entrada;
 import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
 import com.hebergames.letmecook.mapa.niveles.GestorPartida;
+import com.hebergames.letmecook.pantallas.conexion.PantallaConexion;
 import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
 import com.hebergames.letmecook.pantallas.opciones.PantallaOpciones;
 import com.hebergames.letmecook.pantallas.tutorial.PantallaTutorial;
@@ -98,8 +99,6 @@ public class PantallaMenu extends Pantalla {
         camara.update();
         actualizarFondo();
 
-        actualizarHover();
-
         BATCH.setProjectionMatrix(camara.combined);
         BATCH.begin();
 
@@ -110,15 +109,6 @@ public class PantallaMenu extends Pantalla {
         }
 
         BATCH.end();
-    }
-
-    private void actualizarHover() {
-        coordenadasMouse.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        camara.unproject(coordenadasMouse);
-
-        for (TextoInteractuable opcion : opcionesInteractuables) {
-            opcion.actualizarHover(coordenadasMouse.x, coordenadasMouse.y);
-        }
     }
 
     private void actualizarFondo() {

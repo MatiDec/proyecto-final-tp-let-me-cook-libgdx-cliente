@@ -183,10 +183,6 @@ public class Entrada implements InputProcessor {
         this.callbackClick = callback;
     }
 
-    public DatosEntrada getDatosEntrada(Jugador jugador) {
-        return ENTRADAS_POR_JUGADOR.get(jugador);
-    }
-
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         return false;

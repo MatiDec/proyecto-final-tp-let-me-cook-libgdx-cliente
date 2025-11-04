@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.hebergames.letmecook.elementos.EfectoHover;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.utiles.Recursos;
 
@@ -20,7 +19,6 @@ public class ElementoTutorial {
     private float x, y;
     private final float ANCHO = 200f;
     private final float ALTO = 250f;
-    private final EfectoHover EFECTO_HOVER;
 
     public ElementoTutorial(String titulo, final String RUTA_MINIATURA, final String RUTA_SPRITESHEET,
                             final int ANCHO_FRAME, final int ALTURA_FRAME, final int CANTIDAD_FRAMES, final float FRAMES_POR_SEGUNDO) {
@@ -34,8 +32,6 @@ public class ElementoTutorial {
 
         TEXTO_TITULO = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);
         TEXTO_TITULO.setTexto(titulo);
-
-        EFECTO_HOVER = new EfectoHover(TEXTO_TITULO, Color.YELLOW);
     }
 
     private void cargarTextura() {
@@ -71,16 +67,6 @@ public class ElementoTutorial {
         TEXTO_TITULO.dibujar();
 
         batch.setColor(Color.WHITE);
-    }
-
-    public void actualizarHover(float mouseX, float mouseY) {
-        EFECTO_HOVER.actualizar(mouseX, mouseY);
-
-        if (EFECTO_HOVER.isEnHover()) {
-            TEXTO_TITULO.getFuente().setColor(Color.YELLOW);
-        } else {
-            TEXTO_TITULO.getFuente().setColor(Color.WHITE);
-        }
     }
 
     public boolean fueClickeado(float mouseX, float mouseY) {
