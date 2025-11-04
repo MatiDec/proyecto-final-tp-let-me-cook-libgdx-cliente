@@ -116,6 +116,10 @@ public class GestorPartida {
         }
     }
 
+    public void sumarPuntajeSinModificarNivel(int puntaje) {
+        puntajeTotalPartida += puntaje;
+    }
+
     public void sumarPuntaje(int puntaje) {
         if (nivelActual > 0 && nivelActual - 1 < NIVELES_PARTIDA.size()) {
             NIVELES_PARTIDA.get(nivelActual - 1).marcarCompletado(puntaje);
@@ -133,8 +137,5 @@ public class GestorPartida {
 
     public int getPuntajeTotalPartida() { return this.puntajeTotalPartida; }
 
-    public void sumarPuntajeSinModificarNivel(int puntaje) {
-        puntajeTotalPartida += puntaje;
-    }
 
 }

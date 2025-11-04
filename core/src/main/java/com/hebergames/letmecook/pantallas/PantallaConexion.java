@@ -59,16 +59,28 @@ public class PantallaConexion extends Pantalla {
 
         manejarInput();
 
-        // 👇 Verificar desconexión
+        // 🔍 Verificar desconexión con mensajes específicos
         if (cliente != null && !cliente.isConectado()) {
             if (cliente.isServidorCerrado()) {
-                mostrarError("Servidor cerrado");
+                mostrarError("El servidor se cerró inesperadamente");
             } else if (cliente.isJugadorDesconectado()) {
-                mostrarError(cliente.getRazonDesconexion());
+                String razon = cliente.getRazonDesconexion();
+
+                // Mensajes personalizados según el tipo de desconexión
+                if (razon.equals("FIN_PARTIDA")) {
+                    mostrarError("Partida finalizada");
+                } else if (razon.equals("JUGADOR_ABANDONO")) {
+                    mostrarError("El otro jugador abandonó la partida");
+                } else if (razon.equals("DESCONEXION_VOLUNTARIA")) {
+                    // 🔥 No mostrar error si fue desconexión propia
+                    limpiarError();
+                } else {
+                    mostrarError(razon);
+                }
             }
         }
 
-        // 👇 Actualizar temporizador de error
+        // Actualizar temporizador de error
         if (mostrandoError) {
             tiempoError += delta;
             if (tiempoError >= TIEMPO_MOSTRAR_ERROR) {
@@ -151,7 +163,7 @@ public class PantallaConexion extends Pantalla {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            // Volver al menú principal
+            this.dispose();
             Pantalla.cambiarPantalla(new PantallaMenu());
         }
     }
@@ -195,8 +207,15 @@ public class PantallaConexion extends Pantalla {
 
     @Override
     public void dispose() {
+        System.out.println("🧹 Limpiando PantallaConexion...");
+
         if (cliente != null) {
-            cliente.desconectar();
+            if (cliente.isConectado()) {
+                cliente.desconectar();
+            }
+            cliente = null;
         }
+
+        System.out.println("✅ PantallaConexion limpiada");
     }
 }

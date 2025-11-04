@@ -74,17 +74,13 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
     @Override
     public void actualizarProceso(float delta) {
         if (!procesando || ingredienteCocinando == null) {
-            if (INDICADOR != null) {
-                INDICADOR.setVisible(false);
-            }
+            INDICADOR.setEstado(EstadoIndicador.INACTIVO);
             return;
         }
 
         ingredienteCocinando.actualizarCoccion(delta);
 
         if (INDICADOR != null) {
-            INDICADOR.setVisible(true);
-
             if (ingredienteCocinando.estaQuemado()) {
                 INDICADOR.setEstado(EstadoIndicador.QUEMANDOSE);
             } else if (ingredienteCocinando.getEstadoCoccion() == EstadoCoccion.BIEN_HECHO) {

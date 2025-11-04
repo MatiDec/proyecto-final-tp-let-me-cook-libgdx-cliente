@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.hebergames.letmecook.cliente.ClienteRed;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.eventos.entrada.Entrada;
 import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;

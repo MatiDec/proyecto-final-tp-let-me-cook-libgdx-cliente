@@ -499,8 +499,10 @@ public class PantallaJuegoOnline extends Pantalla {
                 Procesadora proc = (Procesadora) estacion.getProcesadora();
 
                 if (proc.getIndicador() != null) {
+                    EstadoIndicador estadoIndicadorPrevio = proc.getIndicador().getEstado();
                     EstadoIndicador estadoIndicador;
 
+                    // Convertir string a enum
                     if (datosEst.estadoIndicador != null && !datosEst.estadoIndicador.isEmpty()) {
                         try {
                             estadoIndicador = EstadoIndicador.valueOf(datosEst.estadoIndicador);
@@ -511,8 +513,12 @@ public class PantallaJuegoOnline extends Pantalla {
                         estadoIndicador = EstadoIndicador.INACTIVO;
                     }
 
-                    proc.getIndicador().setEstado(estadoIndicador);
-                    proc.getIndicador().setVisible(!estadoIndicador.equals(EstadoIndicador.INACTIVO));
+                    // 🚫 Solo actualizar visibilidad si realmente cambió el estado
+                    if (estadoIndicador != estadoIndicadorPrevio) {
+                        proc.getIndicador().setEstado(estadoIndicador);
+                        System.out.println("🔧 Estación " + datosEst.index + " cambió a: " +
+                            estadoIndicador + " (visible=" + proc.getIndicador().isVisible() + ")");
+                    }
                 }
             }
 
@@ -595,9 +601,10 @@ public class PantallaJuegoOnline extends Pantalla {
 
         gestorMapa.renderizar(gestorViewport.getCamaraJuego());
 
+        gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
+
         // Actualizar indicadores si el juego está activo
         if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible()) {
-            gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
             gestorAudio.reanudarMusica();
         }
 
@@ -606,14 +613,13 @@ public class PantallaJuegoOnline extends Pantalla {
             jugador1Local.actualizar(delta);
             jugador2Local.actualizar(delta);
 
-            gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
             gestorAudio.reanudarMusica();
         }
 
         batch.setProjectionMatrix(gestorViewport.getCamaraJuego().combined);
         batch.begin();
 
-        gestorMapa.actualizarEstaciones(delta);
+        //gestorMapa.actualizarEstaciones(delta);
         gestorMapa.dibujarIndicadores(batch);
         gestorIndicadores.dibujar(batch);
 
@@ -904,7 +910,7 @@ public class PantallaJuegoOnline extends Pantalla {
             int puntaje = estado.getPuntaje();
             String razon = estado.getRazonFin();
 
-            // ✅ Guardar puntaje del nivel actual antes de finalizar
+            // Guardar puntaje del nivel actual antes de finalizar
             GestorPartida gestorPartida = GestorPartida.getInstancia();
             int nivelActualIndex = gestorPartida.getNivelActualIndex();
 
@@ -912,11 +918,10 @@ public class PantallaJuegoOnline extends Pantalla {
                 NivelPartida nivelActual = gestorPartida.getTodosLosNiveles().get(nivelActualIndex);
                 if (!nivelActual.isCompletado()) {
                     nivelActual.marcarCompletado(puntaje - gestorPartida.getPuntajeTotalPartida());
-                    System.out.println("✅ Último nivel marcado con puntaje: " + (puntaje - gestorPartida.getPuntajeTotalPartida()));
                 }
             }
 
-            // ✅ Determinar si es despido
+            // Determinar si es despido
             boolean esDespido = razon != null && !razon.isEmpty();
 
             if (esDespido) {
@@ -925,6 +930,11 @@ public class PantallaJuegoOnline extends Pantalla {
             }
 
             terminarJuego(puntaje);
+        }
+
+        // 🔍 Verificar si el otro jugador se desconectó
+        if (cliente.isJugadorDesconectado() && !juegoFinalizado) {
+            finalizarPorDesconexion();
         }
     }
 
@@ -974,11 +984,11 @@ public class PantallaJuegoOnline extends Pantalla {
             razon = cliente.getRazonDesconexion();
         }
 
-        System.out.println("Finalizando por desconexión: " + razon);
+        System.out.println("🔴 Finalizando por desconexión: " + razon);
 
+        // 🔥 NO desconectar aquí - se hará en dispose()
         Gdx.app.postRunnable(() -> {
-            cliente.desconectar();
-            Pantalla.cambiarPantalla(new PantallaMenu());
+            Pantalla.cambiarPantalla(new PantallaConexion());
         });
     }
 
@@ -990,23 +1000,28 @@ public class PantallaJuegoOnline extends Pantalla {
         float distanciaMinima = DISTANCIA_INTERACCION;
 
         for (int i = 0; i < gestorMapa.getEstaciones().size(); i++) {
-            EstacionTrabajo estacion = gestorMapa.getEstaciones().get(i);
-
-            float centroEstacionX = estacion.area.x + estacion.area.width / 2f;
-            float centroEstacionY = estacion.area.y + estacion.area.height / 2f;
-
-            float centroJugadorX = posJugadorLocal.x + 64;
-            float centroJugadorY = posJugadorLocal.y + 64;
-
-            float dx = centroJugadorX - centroEstacionX;
-            float dy = centroJugadorY - centroEstacionY;
-            float distancia = (float) Math.sqrt(dx * dx + dy * dy);
+            float distancia = getDistancia(i, posJugadorLocal);
 
             if (distancia < distanciaMinima) {
                 distanciaMinima = distancia;
                 estacionCercanaIndex = i;
             }
         }
+    }
+
+    private float getDistancia(int i, Vector2 posJugadorLocal) {
+        EstacionTrabajo estacion = gestorMapa.getEstaciones().get(i);
+
+        float centroEstacionX = estacion.area.x + estacion.area.width / 2f;
+        float centroEstacionY = estacion.area.y + estacion.area.height / 2f;
+
+        float centroJugadorX = posJugadorLocal.x + 64;
+        float centroJugadorY = posJugadorLocal.y + 64;
+
+        float dx = centroJugadorX - centroEstacionX;
+        float dy = centroJugadorY - centroEstacionY;
+        float distancia = (float) Math.sqrt(dx * dx + dy * dy);
+        return distancia;
     }
 
     @Override
@@ -1037,19 +1052,23 @@ public class PantallaJuegoOnline extends Pantalla {
 
     @Override
     public void dispose() {
+        System.out.println("🧹 Limpiando PantallaJuegoOnline...");
+
         juegoFinalizado = true;
 
+        // 🔥 Desconectar cliente UNA SOLA VEZ
         if (cliente != null && cliente.isConectado()) {
             cliente.desconectar();
+            cliente = null;
         }
 
-        // ✅ Liberar clientes visuales
+        // Liberar clientes visuales
         for (Cliente c : clientesVisualesMap.values()) {
             c.liberarRecursos();
         }
         clientesVisualesMap.clear();
 
-        // ✅ Liberar animaciones
+        // Liberar animaciones
         if (gestorAnimacionJ1 != null) {
             gestorAnimacionJ1.dispose();
             gestorAnimacionJ1 = null;
@@ -1060,25 +1079,27 @@ public class PantallaJuegoOnline extends Pantalla {
             gestorAnimacionJ2 = null;
         }
 
-        // ✅ Liberar overlays
+        // Liberar overlays
         if (gestorOverlays != null) {
             gestorOverlays.dispose();
             gestorOverlays = null;
         }
 
-        // ✅ Liberar UI
+        // Liberar UI
         if (gestorUI != null) {
             gestorUI.dispose();
             gestorUI = null;
         }
 
-        // ✅ Liberar mapa
+        // Liberar mapa
         if (gestorMapa != null) {
             gestorMapa.dispose();
             gestorMapa = null;
         }
 
         GestorEventosAleatorios.getInstancia().reset();
+
+        System.out.println("✅ PantallaJuegoOnline limpiada");
     }
 
     //esto de aca es porque me quedaba de fondo consumiendo ram cada vez que cerraba con la x el game aunque ahora no lo implemente
