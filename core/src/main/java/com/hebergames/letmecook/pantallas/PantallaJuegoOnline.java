@@ -905,10 +905,22 @@ public class PantallaJuegoOnline extends Pantalla {
     }
 
     private void verificarFinJuego() {
+        // 🔍 Verificar si el otro jugador se desconectó
+        if (cliente.isJugadorDesconectado() && !juegoFinalizado) {
+            System.out.println("Se desconectó el otro jugador");
+            finalizarPorDesconexion();
+            return; // 🔥 Salir inmediatamente
+        }
+
         PaqueteEstado estado = cliente.getUltimoEstado();
-        if (estado != null && estado.isJuegoTerminado()) {
+        if (estado != null && estado.isJuegoTerminado() && !juegoFinalizado) {
+            System.out.println("🏁 Juego terminado detectado desde el servidor");
+
             int puntaje = estado.getPuntaje();
             String razon = estado.getRazonFin();
+
+            System.out.println("   - Puntaje final: " + puntaje);
+            System.out.println("   - Razón: " + (razon.isEmpty() ? "Ninguna (completado)" : razon));
 
             // Guardar puntaje del nivel actual antes de finalizar
             GestorPartida gestorPartida = GestorPartida.getInstancia();
@@ -925,16 +937,14 @@ public class PantallaJuegoOnline extends Pantalla {
             boolean esDespido = razon != null && !razon.isEmpty();
 
             if (esDespido) {
+                System.out.println("❌ Es un despido: " + razon);
                 despedido = true;
                 razonDespido = razon;
+            } else {
+                System.out.println("✅ Juego completado exitosamente");
             }
 
             terminarJuego(puntaje);
-        }
-
-        // 🔍 Verificar si el otro jugador se desconectó
-        if (cliente.isJugadorDesconectado() && !juegoFinalizado) {
-            finalizarPorDesconexion();
         }
     }
 

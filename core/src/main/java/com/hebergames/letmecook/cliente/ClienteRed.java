@@ -75,7 +75,7 @@ public class ClienteRed {
         while (conectado) {
             try {
                 DatagramPacket paquete = new DatagramPacket(buffer, buffer.length);
-                socket.setSoTimeout(1000); // 🔥 Timeout de 1 segundo para no quedarse bloqueado
+                socket.setSoTimeout(2000); // 🔥 Timeout de 2 segundos para no perder paquetes
                 socket.receive(paquete);
 
                 PaqueteRed recibido = PaqueteRed.deserializar(paquete.getData());
@@ -86,7 +86,7 @@ public class ClienteRed {
                 } else if (recibido instanceof PaqueteDesconexion) {
                     PaqueteDesconexion desc = (PaqueteDesconexion) recibido;
                     manejarDesconexionRecibida(desc);
-                    break; // 🔥 Salir del bucle
+                    return; // 🔥 Cambiar break por return para salir inmediatamente
                 } else if (recibido instanceof PaqueteInicioPartida) {
                     configuracionPartida = (PaqueteInicioPartida) recibido;
                     System.out.println("📦 Configuración de partida recibida");
@@ -98,7 +98,7 @@ public class ClienteRed {
             } catch (SocketTimeoutException e) {
                 // Timeout normal - continuar
             } catch (SocketException e) {
-                if (conectado) {
+                if (conectado && ultimoEstado != null) {
                     System.err.println("⚠️ Error de socket: " + e.getMessage());
                 }
                 break; // 🔥 Salir si el socket se cerró
@@ -135,10 +135,22 @@ public class ClienteRed {
         }
 
         conectado = false;
+
+        // 🔥 CRÍTICO: Cerrar el socket inmediatamente para liberar el hilo receptor
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+            System.out.println("✅ Socket cerrado tras recibir desconexión");
+        }
+
+        // 🔥 Detener el executor
+        if (executor != null && !executor.isShutdown()) {
+            executor.shutdownNow();
+            System.out.println("✅ Executor detenido tras recibir desconexión");
+        }
     }
 
     private void enviarPingsAutomaticos() {
-        while (conectado) {
+        while (conectado && !socket.isClosed()) { // 🔥 Agregar verificación del socket
             try {
                 enviarPaquete(new PaqueteRed() {
                     @Override
@@ -147,7 +159,7 @@ public class ClienteRed {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 System.out.println("🛑 Hilo de pings interrumpido");
-                break; // 🔥 Salir limpiamente si se interrumpe
+                break;
             } catch (Exception e) {
                 if (conectado) {
                     System.err.println("Error enviando ping: " + e.getMessage());
