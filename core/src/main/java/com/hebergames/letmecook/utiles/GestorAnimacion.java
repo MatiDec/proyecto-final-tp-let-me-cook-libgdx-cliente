@@ -19,25 +19,14 @@ public class GestorAnimacion {
         this.DURACION_FRAME = duracion;
         ANIMACIONES = new HashMap<>();
 
-        registrarAnimacion("vacio", 0);
-        registrarAnimacion("pan", 1);
-        registrarAnimacion("carne", 2);
-        registrarAnimacion("pollo", 3);
-        registrarAnimacion("milanesa de carne", 4);
-        registrarAnimacion("milanesa de pollo", 5);
-        registrarAnimacion("papas", 6);
-        registrarAnimacion("nuggets", 7);
-        registrarAnimacion("aros de cebolla", 8);
-        registrarAnimacion("rabas", 9);
-        registrarAnimacion("hamburguesa de carne", 10);
-        registrarAnimacion("hamburguesa de pollo", 11);
-        registrarAnimacion("bandeja para milanesa de carne", 12);
-        registrarAnimacion("bandeja para milanesa de pollo", 13);
-        registrarAnimacion("envase de papas", 14);
-        registrarAnimacion("envase de nuggets", 15);
-        registrarAnimacion("envase de aros de cebolla", 16);
-        registrarAnimacion("envase de rabas", 17);
+        String[] nombres = { "vacio", "pan", "carne", "pollo", "milanesa de carne", "milanesa de pollo", "papas",
+            "nuggets", "aros de cebolla", "rabas", "hamburguesa de carne", "hamburguesa de pollo", "bandeja para milanesa de carne",
+            "bandeja para milanesa de pollo", "envase de papas", "envase de nuggets", "envase de aros de cebolla", "envase de rabas"
+        };
 
+        for (int i = 0; i < nombres.length; i++) {
+            registrarAnimacion(nombres[i], i);
+        }
     }
 
     public void registrarAnimacion(String nombre, int filaAnimacion) {

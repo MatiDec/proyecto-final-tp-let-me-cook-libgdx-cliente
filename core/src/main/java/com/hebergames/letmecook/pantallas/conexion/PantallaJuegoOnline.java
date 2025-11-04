@@ -377,7 +377,6 @@ public class PantallaJuegoOnline extends Pantalla {
     public void dispose() {
         if (cliente != null && cliente.isConectado()) {
             cliente.desconectar();
-            cliente = null;
         }
 
         if (gestorJugadores != null) {

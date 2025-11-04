@@ -13,6 +13,8 @@ import com.hebergames.letmecook.red.VisualizadorMenuEstacion;
 import com.hebergames.letmecook.red.paquetes.DatosEstacion;
 import com.hebergames.letmecook.red.paquetes.DatosJugador;
 import com.hebergames.letmecook.red.paquetes.PaqueteEstado;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 
 import java.util.ArrayList;
@@ -74,6 +76,12 @@ public class GestorEstacionesOnline {
 
                     if (estadoIndicador != estadoIndicadorPrevio) {
                         proc.getIndicador().setEstado(estadoIndicador);
+
+                        if (estadoIndicador == EstadoIndicador.LISTO) {
+                            GestorAudio.getInstance().reproducirSonido(SonidoJuego.COCCION_PERFECTA);
+                        } else if (estadoIndicador == EstadoIndicador.QUEMANDOSE) {
+                            GestorAudio.getInstance().reproducirSonido(SonidoJuego.ALERTA_QUEMADO);
+                        }
                     }
                 }
             }

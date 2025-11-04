@@ -12,6 +12,8 @@ import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.mapa.GestorMapa;
 import com.hebergames.letmecook.red.paquetes.DatosCliente;
 import com.hebergames.letmecook.red.paquetes.PaqueteEstado;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 
 import java.util.*;
@@ -61,6 +63,13 @@ public class GestorClientesOnline {
 
         Cliente clienteVisual = new Cliente(productos, dc.tiempoRestante,
             dc.esVirtual ? TipoCliente.VIRTUAL : TipoCliente.PRESENCIAL);
+
+        if (dc.esVirtual) {
+            GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_LLEGA_VIRTUAL);
+        } else {
+            GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_LLEGA);
+        }
+
         clienteVisual.getPedido().setEstadoPedido(dc.getEstadoPedido());
 
         TextureRegion texturaCliente = GestorTexturas.getInstance().getTexturaCliente();

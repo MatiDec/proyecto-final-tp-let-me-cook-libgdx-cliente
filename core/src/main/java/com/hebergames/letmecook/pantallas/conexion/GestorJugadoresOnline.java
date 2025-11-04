@@ -21,8 +21,8 @@ public class GestorJugadoresOnline {
     }
 
     public void inicializarJugadores() {
-        gestorAnimacionJ1 = new GestorAnimacion(Recursos.JUGADOR_1_SPRITESHEET, 128, 32, 0.2f);
-        gestorAnimacionJ2 = new GestorAnimacion(Recursos.JUGADOR_2_SPRITESHEET, 128, 32, 0.2f);
+        gestorAnimacionJ1 = new GestorAnimacion(Recursos.JUGADOR_1_SPRITESHEET, 128, 128, 0.2f);
+        gestorAnimacionJ2 = new GestorAnimacion(Recursos.JUGADOR_2_SPRITESHEET, 128, 128, 0.2f);
 
         jugador1Local = new Jugador(0, 0, gestorAnimacionJ1);
         jugador2Local = new Jugador(0, 0, gestorAnimacionJ2);
