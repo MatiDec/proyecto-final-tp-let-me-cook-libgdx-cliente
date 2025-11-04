@@ -16,11 +16,9 @@ public class PantallaConexion extends Pantalla {
     private ClienteRed cliente;
     private String ipServidor;
     private Texto textoTitulo;
-    private Texto textoIP;
     private Texto textoEstado;
     private Texto textoInstrucciones;
     private SpriteBatch batch;
-    private final StringBuilder IP_ESCRITA;
     private boolean intentandoConectar;
 
     private boolean mostrandoError = false;
@@ -29,7 +27,6 @@ public class PantallaConexion extends Pantalla {
     private static final float TIEMPO_MOSTRAR_ERROR = 5f;
 
     public PantallaConexion() {
-        IP_ESCRITA = new StringBuilder("192.168.0.202");
         intentandoConectar = false;
     }
 
@@ -52,13 +49,6 @@ public class PantallaConexion extends Pantalla {
         textoInstrucciones.setPosition(
             anchoPantalla / 2f - textoInstrucciones.getAncho() / 2f,
             altoPantalla * 0.65f
-        );
-
-        textoIP = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, false);
-        actualizarTextoIP();
-        textoIP.setPosition(
-            anchoPantalla / 2f - textoIP.getAncho() / 2f,
-            altoPantalla * 0.50f
         );
 
         textoEstado = new Texto(Recursos.FUENTE_MENU, 28, Color.WHITE, false);
@@ -120,7 +110,6 @@ public class PantallaConexion extends Pantalla {
         batch.begin();
         textoTitulo.dibujar();
         textoInstrucciones.dibujar();
-        textoIP.dibujar();
         textoEstado.dibujar();
         batch.end();
     }
@@ -149,30 +138,6 @@ public class PantallaConexion extends Pantalla {
     private void manejarInput() {
         if (intentandoConectar) return;
 
-        for (int i = Input.Keys.NUM_0; i <= Input.Keys.NUM_9; i++) {
-            if (Gdx.input.isKeyJustPressed(i)) {
-                if (IP_ESCRITA.length() < 15) {
-                    IP_ESCRITA.append(i - Input.Keys.NUM_0);
-                    actualizarTextoIP();
-                }
-            }
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD) ||
-            Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_DOT)) {
-            if (IP_ESCRITA.length() < 15) {
-                IP_ESCRITA.append(".");
-                actualizarTextoIP();
-            }
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-            if (IP_ESCRITA.length() > 0) {
-                IP_ESCRITA.deleteCharAt(IP_ESCRITA.length() - 1);
-                actualizarTextoIP();
-            }
-        }
-
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             intentarConexion();
         }
@@ -186,7 +151,7 @@ public class PantallaConexion extends Pantalla {
     private void intentarConexion() {
         intentandoConectar = true;
         textoEstado.setTexto("Conectando...");
-        ipServidor = IP_ESCRITA.toString();
+        ipServidor = "255.255.255.255";
 
         new Thread(() -> {
             cliente = new ClienteRed();
@@ -202,10 +167,6 @@ public class PantallaConexion extends Pantalla {
                 }
             });
         }).start();
-    }
-
-    private void actualizarTextoIP() {
-        textoIP.setTexto("IP: " + IP_ESCRITA + "_");
     }
 
     @Override
