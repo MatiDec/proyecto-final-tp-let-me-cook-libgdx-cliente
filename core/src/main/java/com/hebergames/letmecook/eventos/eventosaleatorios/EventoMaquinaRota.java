@@ -5,7 +5,7 @@ import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 public class EventoMaquinaRota implements EventoAleatorio {
     private final EstacionTrabajo ESTACION_AFECTADA;
     private boolean activo;
-    private final float PROBABILIDAD = 0.15f;
+    private final float PROBABILIDAD = 0.05f;
 
     public EventoMaquinaRota(EstacionTrabajo estacion) {
         this.ESTACION_AFECTADA = estacion;

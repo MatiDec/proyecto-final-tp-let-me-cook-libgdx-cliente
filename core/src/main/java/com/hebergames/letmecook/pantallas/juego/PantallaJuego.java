@@ -14,6 +14,8 @@ import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.entregables.recetas.GestorRecetas;
 import com.hebergames.letmecook.entregables.recetas.Receta;
+import com.hebergames.letmecook.estaciones.Basurero;
+import com.hebergames.letmecook.estaciones.conmenu.Heladera;
 import com.hebergames.letmecook.estaciones.interaccionclientes.CajaVirtual;
 import com.hebergames.letmecook.estaciones.procesadoras.Procesadora;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoMaquinaRota;
@@ -260,7 +262,9 @@ public class PantallaJuego extends Pantalla {
         for (EstacionTrabajo estacion : estaciones) {
             if (!(estacion instanceof CajaRegistradora) &&
                 !(estacion instanceof MesaRetiro) &&
-                !(estacion instanceof CajaVirtual)) {
+                !(estacion instanceof CajaVirtual) &&
+                !(estacion instanceof Basurero) &&
+                !(estacion instanceof Heladera)){
                 gestorEventos.registrarEventoPosible(new EventoMaquinaRota(estacion));
             }
         }
