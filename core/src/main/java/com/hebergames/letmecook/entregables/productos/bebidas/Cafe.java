@@ -11,9 +11,9 @@ public class Cafe extends Bebida {
     private static final Map<String, Float> TIPOS_CAFE = new HashMap<>();
 
     static {
-        TIPOS_CAFE.put("Expreso", 3f);
-        TIPOS_CAFE.put("Americano", 4f);
-        TIPOS_CAFE.put("Cortado", 5f);
+        TIPOS_CAFE.put("expreso", 3f);
+        TIPOS_CAFE.put("americano", 4f);
+        TIPOS_CAFE.put("cortado", 5f);
     }
 
     private final String TIPO;

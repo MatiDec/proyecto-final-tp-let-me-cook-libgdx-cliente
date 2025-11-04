@@ -93,6 +93,7 @@ public class GestorTexturas {
             Texture texturaBebidas = new Texture(Gdx.files.internal(Recursos.BEBIDAS_SPRITESHEET));
             TextureRegion[][] tmpBebidas = TextureRegion.split(texturaBebidas,
                 Recursos.SPRITE_ITEM_WIDTH, Recursos.SPRITE_ITEM_HEIGHT);
+            System.out.println("Filas: " + tmpBebidas.length + " | Columnas: " + tmpBebidas[0].length);
 
             String[] tiposCafe = {"expreso", "americano", "cortado"};
             String[] tiposGaseosa = {"jugo", "soda", "sprite", "pepsi", "cocacola"};
@@ -142,6 +143,11 @@ public class GestorTexturas {
         }
 
         cargarTexturasMaquinas();
+        System.out.println("=== Texturas de bebidas cargadas ===");
+        for (String key : TEXTURAS_PRODUCTOS.keySet()) {
+            if (key.contains("jugo") || key.contains("expreso") || key.contains("coca"))
+                System.out.println(" -> " + key);
+        }
 
         texturasListas = true;
     }

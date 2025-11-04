@@ -25,4 +25,22 @@ public class PaqueteInput extends PaqueteRed {
         return TipoPaquete.INPUT_JUGADOR;
     }
 
+    public int getIdJugador() {return this.ID_JUGADOR;}
+
+    public boolean isArriba() {return this.ARRIBA;}
+
+    public boolean isAbajo() {return this.ABAJO;}
+
+    public boolean isIzquierda() {
+        return this.IZQUIERDA;
+    }
+
+    public boolean isDerecha() {
+        return this.DERECHA;
+    }
+
+    public boolean isCorrer() {
+        return this.CORRER;
+    }
+
 }

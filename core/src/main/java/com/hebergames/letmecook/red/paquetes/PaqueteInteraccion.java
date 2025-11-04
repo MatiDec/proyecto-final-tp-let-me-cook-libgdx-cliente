@@ -36,4 +36,19 @@ public class PaqueteInteraccion extends PaqueteRed {
         return TipoPaquete.INTERACCION;
     }
 
+    public int getIndexEstacion() {
+        return this.INDICE_ESTACION;
+    }
+
+    public int getIdJugador() {
+        return this.ID_JUGADOR;
+    }
+
+    public TipoInteraccion getTipoInteraccion() {
+        return this.TIPO_INTERACCION;
+    }
+
+    public int getParametroExtra() {
+        return this.PARAMETRO_EXTRA;
+    }
 }
