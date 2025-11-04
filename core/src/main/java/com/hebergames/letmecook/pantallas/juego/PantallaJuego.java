@@ -172,14 +172,14 @@ public class PantallaJuego extends Pantalla {
 
     private void configurarTexturasJugadores() {
         gestorAnimacionJ1 = new GestorAnimacion(
-            Recursos.JUGADOR_SPRITESHEET,
-            32, 32, 0.2f
+            Recursos.JUGADOR_1_SPRITESHEET,
+            128, 128, 0.2f
         );
 
         if (MODO_MULTIJUGADOR) {
             gestorAnimacionJ2 = new GestorAnimacion(
-                Recursos.JUGADOR_SPRITESHEET,
-                32, 32, 0.2f
+                Recursos.JUGADOR_2_SPRITESHEET,
+                128, 128, 0.2f
             );
         }
     }

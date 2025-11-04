@@ -59,31 +59,11 @@ public class PantallaTutorial extends Pantalla {
         // Formato: (título, miniatura, spritesheet, frameWidth, frameHeight, cantidadFrames, fps)
         elementosTutorial.add(new ElementoTutorial(
             "Controles Básicos",
-            Recursos.RUTA_TUTORIALES + "miniatura_controles.jpg",
-            Recursos.RUTA_TUTORIALES + "spritesheet_controles.jpg",
-            128, 64, 12, 10f
+            Recursos.RUTA_TUTORIALES + "miniatura_controles.png",
+            Recursos.RUTA_TUTORIALES + "spritesheet_controles.png",
+            640, 360, 151, 10f
         ));
 
-        elementosTutorial.add(new ElementoTutorial(
-            "Cocinar Recetas",
-            Recursos.RUTA_TUTORIALES + "miniatura_recetas.png",
-            Recursos.RUTA_TUTORIALES + "spritesheet_recetas.png",
-            64, 64, 16, 12f
-        ));
-
-        elementosTutorial.add(new ElementoTutorial(
-            "Atender Clientes",
-            Recursos.RUTA_TUTORIALES + "miniatura_clientes.png",
-            Recursos.RUTA_TUTORIALES + "spritesheet_clientes.png",
-            64, 64, 10, 8f
-        ));
-
-        elementosTutorial.add(new ElementoTutorial(
-            "Gestionar Pedidos",
-            Recursos.RUTA_TUTORIALES + "miniatura_pedidos.png",
-            Recursos.RUTA_TUTORIALES + "spritesheet_pedidos.png",
-            64, 64, 14, 10f
-        ));
     }
 
     private void posicionarElementos() {

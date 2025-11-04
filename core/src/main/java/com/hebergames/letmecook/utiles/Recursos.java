@@ -20,7 +20,8 @@ public class Recursos {
     public static final String ARCHIVO_CONFIG = "core/src/main/java/com/hebergames/letmecook/configuracion/configuracion.txt";
 
 
-    public static final String JUGADOR_SPRITESHEET = RUTA_IMAGENES + "Jugador.png";
+    public static final String JUGADOR_1_SPRITESHEET = RUTA_IMAGENES + "Jugador1.png";
+    public static final String JUGADOR_2_SPRITESHEET = RUTA_IMAGENES + "Jugador2.png";
     public static final String CLIENTES_SPRITESHEET = RUTA_IMAGENES + "clientes.jpg";
     public static final String CARAS_SPRITESHEET = RUTA_IMAGENES + "caras.jpg";
     public static final String PRODUCTOS_SPRITESHEET = RUTA_IMAGENES + "productos.png";

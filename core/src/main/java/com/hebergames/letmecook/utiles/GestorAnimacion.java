@@ -20,8 +20,24 @@ public class GestorAnimacion {
         ANIMACIONES = new HashMap<>();
 
         registrarAnimacion("vacio", 0);
-        registrarAnimacion("carne", 1);
-        registrarAnimacion("pan", 2);
+        registrarAnimacion("pan", 1);
+        registrarAnimacion("carne", 2);
+        registrarAnimacion("pollo", 3);
+        registrarAnimacion("milanesa de carne", 4);
+        registrarAnimacion("milanesa de pollo", 5);
+        registrarAnimacion("papas", 6);
+        registrarAnimacion("nuggets", 7);
+        registrarAnimacion("aros de cebolla", 8);
+        registrarAnimacion("rabas", 9);
+        registrarAnimacion("hamburguesa de carne", 10);
+        registrarAnimacion("hamburguesa de pollo", 11);
+        registrarAnimacion("bandeja para milanesa de carne", 12);
+        registrarAnimacion("bandeja para milanesa de pollo", 13);
+        registrarAnimacion("envase de papas", 14);
+        registrarAnimacion("envase de nuggets", 15);
+        registrarAnimacion("envase de aros de cebolla", 16);
+        registrarAnimacion("envase de rabas", 17);
+
     }
 
     public void registrarAnimacion(String nombre, int filaAnimacion) {
