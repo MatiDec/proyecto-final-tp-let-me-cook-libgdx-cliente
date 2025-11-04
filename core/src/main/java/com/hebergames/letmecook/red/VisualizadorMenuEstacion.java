@@ -96,16 +96,15 @@ public class VisualizadorMenuEstacion {
     public void mostrarMenuCafetera(boolean esJugador1, String estadoActual, float progreso) {
         this.esJugador1 = esJugador1;
         this.tipoEstacion = "Cafetera";
+        this.visible = true; // 👈 Asegurarse que está visible
 
-        // Si el menú ya está visible y es el mismo tipo de estación,
-        // y estamos en PREPARANDO, solo actualizamos el título para mostrar el progreso.
-        if (this.visible && "Cafetera".equals(this.tipoEstacion) && textoTitulo != null && "PREPARANDO".equals(estadoActual)) {
+        // Si el menú ya está visible y estamos en PREPARANDO, solo actualizamos el título
+        if ("PREPARANDO".equals(estadoActual) && textoTitulo != null && textosMenu.isEmpty()) {
             textoTitulo.setTexto(String.format("Preparando... %.0f%%", progreso * 100f));
             return;
         }
 
         // Si no, reconstruimos el menú (caso inicial o cambio de estado)
-        this.visible = true;
         limpiarTextos();
 
         textoTitulo = obtenerTextoLibre();
@@ -133,16 +132,15 @@ public class VisualizadorMenuEstacion {
     public void mostrarMenuFuente(boolean esJugador1, String estadoActual, float progreso) {
         this.esJugador1 = esJugador1;
         this.tipoEstacion = "Fuente";
+        this.visible = true; // 👈 Asegurarse que está visible
 
-        // Si el menú ya está visible y es el mismo tipo de estación,
-        // y estamos en PREPARANDO, solo actualizamos el título para mostrar el progreso.
-        if (this.visible && "Fuente".equals(this.tipoEstacion) && textoTitulo != null && "PREPARANDO".equals(estadoActual)) {
+        // Si el menú ya está visible y estamos en PREPARANDO, solo actualizamos el título
+        if ("PREPARANDO".equals(estadoActual) && textoTitulo != null && textosMenu.isEmpty()) {
             textoTitulo.setTexto(String.format("Sirviendo... %.0f%%", progreso * 100f));
             return;
         }
 
         // Si no, reconstruimos el menú (caso inicial o cambio de estado)
-        this.visible = true;
         limpiarTextos();
 
         textoTitulo = obtenerTextoLibre();
@@ -166,7 +164,6 @@ public class VisualizadorMenuEstacion {
                 break;
         }
     }
-
 
     public void mostrarMenuEnvasadora(boolean esJugador1, String nombreIngrediente) {
         this.esJugador1 = esJugador1;

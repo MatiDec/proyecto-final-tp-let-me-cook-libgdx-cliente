@@ -1097,6 +1097,8 @@ public class PantallaJuegoOnline extends Pantalla {
             gestorMapa = null;
         }
 
+        GestorAudio.getInstance().dispose();
+
         GestorEventosAleatorios.getInstancia().reset();
 
         System.out.println("✅ PantallaJuegoOnline limpiada");
