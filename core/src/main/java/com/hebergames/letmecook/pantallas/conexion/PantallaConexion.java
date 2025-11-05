@@ -45,7 +45,7 @@ public class PantallaConexion extends Pantalla {
         );
 
         textoInstrucciones = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, false);
-        textoInstrucciones.setTexto("Ingresa la IP del servidor y presiona ENTER");
+        textoInstrucciones.setTexto("Presiona ENTER para buscar al servidor en tu red");
         textoInstrucciones.setPosition(
             anchoPantalla / 2f - textoInstrucciones.getAncho() / 2f,
             altoPantalla * 0.65f

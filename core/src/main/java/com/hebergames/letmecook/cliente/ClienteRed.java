@@ -48,10 +48,12 @@ public class ClienteRed {
             if (respuesta instanceof PaqueteConexion) {
                 PaqueteConexion conexion = (PaqueteConexion) respuesta;
                 if (conexion.esAprobado()) {
-                    idJugador = conexion.getIdJugador();
-                    conectado = true;
+                    this.idJugador = conexion.getIdJugador();
+                    this.direccionServidor = paquete.getAddress();
+                    this.conectado = true;
 
                     System.out.println("Conectado como Jugador " + idJugador);
+                    System.out.println("IP del servidor: " + direccionServidor.getHostAddress());
 
                     executor.execute(this::recibirEstados);
                     executor.execute(this::enviarPingsAutomaticos);
