@@ -143,7 +143,7 @@ public class PantallaJuegoOnline extends Pantalla {
 
     @Override
     public void render(float delta) {
-        if (gestorFinalizacion.isJuegoFinalizado()) return;
+        if (gestorFinalizacion != null && gestorFinalizacion.isJuegoFinalizado()) return;
 
         if (cliente.isServidorCerrado() || cliente.isJugadorDesconectado()) {
             gestorFinalizacion.finalizarPorDesconexion();
@@ -179,6 +179,9 @@ public class PantallaJuegoOnline extends Pantalla {
     }
 
     private void manejarTeclasEspeciales() {
+        if (gestorFinalizacion != null && gestorFinalizacion.isJuegoFinalizado()) {
+            return;
+        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             if (gestorOverlays.isCalendarioVisible()) {
                 gestorOverlays.toggleCalendario();
@@ -242,6 +245,11 @@ public class PantallaJuegoOnline extends Pantalla {
     }
 
     private void renderizarJuego(float delta) {
+
+        if (gestorFinalizacion != null && gestorFinalizacion.isJuegoFinalizado()) {
+            return;
+        }
+
         gestorViewport.getViewportJuego().apply();
         gestorViewport.actualizarCamaraDinamica(gestorJugadores.getJugador1(), gestorJugadores.getJugador2());
 
@@ -375,6 +383,11 @@ public class PantallaJuegoOnline extends Pantalla {
 
     @Override
     public void dispose() {
+
+        if (gestorFinalizacion != null) {
+            gestorFinalizacion.marcarComoFinalizado();
+        }
+
         if (cliente != null && cliente.isConectado()) {
             cliente.desconectar();
         }

@@ -72,9 +72,8 @@ public class ClienteRed {
 
     private void recibirEstados() {
         byte[] buffer = new byte[8192];
-        boolean error = false;
 
-        while (conectado || !error) {
+        while (conectado) {
             try {
                 DatagramPacket paquete = new DatagramPacket(buffer, buffer.length);
                 socket.setSoTimeout(2000);
@@ -101,12 +100,10 @@ public class ClienteRed {
                 if (conectado && ultimoEstado != null) {
                     System.err.println("⚠️ Error de socket: " + e.getMessage());
                 }
-                error = true;
             } catch (Exception e) {
                 if (conectado) {
                     System.err.println("Error recibiendo estado: " + e.getMessage());
                 }
-                error = true;
             }
         }
 
@@ -236,7 +233,7 @@ public class ClienteRed {
         if (executor != null && !executor.isShutdown()) {
             executor.shutdownNow();
             try {
-                if (!executor.awaitTermination(1, java.util.concurrent.TimeUnit.SECONDS)) {
+                if (!executor.awaitTermination(3, java.util.concurrent.TimeUnit.SECONDS)) {
                     System.err.println("⚠️ Executor no terminó a tiempo");
                 }
             } catch (InterruptedException e) {

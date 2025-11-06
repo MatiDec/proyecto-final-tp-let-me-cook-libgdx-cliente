@@ -106,6 +106,10 @@ public class GestorFinalizacionOnline {
             razon = CLIENTE.getRazonDesconexion();
         }
 
+        if (GESTOR_AUDIO != null) {
+            GESTOR_AUDIO.detenerMusica();
+        }
+
         Gdx.app.postRunnable(() -> {
             Pantalla.cambiarPantalla(new PantallaConexion());
         });
@@ -113,5 +117,9 @@ public class GestorFinalizacionOnline {
 
     public boolean isJuegoFinalizado() {
         return this.juegoFinalizado;
+    }
+
+    public void marcarComoFinalizado() {
+        this.juegoFinalizado = true;
     }
 }

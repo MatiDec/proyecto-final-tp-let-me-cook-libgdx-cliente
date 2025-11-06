@@ -43,7 +43,7 @@ public class PantallaTutorial extends Pantalla {
         titulo.setTexto("Tutoriales");
 
         try {
-            botonCerrar = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/botonCerrar.png"));
+            botonCerrar = new Texture(Gdx.files.internal("imagenes/botonCerrar.png"));
         } catch (Exception e) {
             System.err.println("Error cargando botón cerrar");
         }

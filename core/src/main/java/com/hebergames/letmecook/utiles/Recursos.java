@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Recursos {
 
-    public static final String RUTA_IMAGENES = "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/";
-    public static final String RUTA_FUENTES = "core/src/main/java/com/hebergames/letmecook/recursos/fuentes/";
-    public static final String RUTA_AUDIO = "core/src/main/java/com/hebergames/letmecook/recursos/audio/";
-    public static final String RUTA_MAPAS = "core/src/main/java/com/hebergames/letmecook/recursos/mapas/";
-    public static final String RUTA_TUTORIALES = "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/";
+    public static final String RUTA_IMAGENES = "imagenes/";
+    public static final String RUTA_FUENTES = "fuentes/";
+    public static final String RUTA_AUDIO = "audio/";
+    public static final String RUTA_MAPAS = "mapas/";
+    public static final String RUTA_TUTORIALES = "imagenes/tutoriales/";
 
     public static final String FONDO = RUTA_IMAGENES + "pruebadeimagen.png";
     public static final String FUENTE_MENU = RUTA_FUENTES + "Chewy-Regular.ttf";
@@ -17,7 +17,7 @@ public class Recursos {
     public static final String MAQUINAS_SPRITESHEET = RUTA_IMAGENES + "maquinas.png";
     private static final Texture TEXTURA_INGREDIENTES = new Texture(RUTA_IMAGENES + "ingredientes.png");
     public static final TextureRegion INGREDIENTES = new TextureRegion(TEXTURA_INGREDIENTES);
-    public static final String ARCHIVO_CONFIG = "core/src/main/java/com/hebergames/letmecook/configuracion/configuracion.txt";
+    public static final String ARCHIVO_CONFIG = "configuracion/configuracion.txt";
 
 
     public static final String JUGADOR_1_SPRITESHEET = RUTA_IMAGENES + "Jugador1.png";
